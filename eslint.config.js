@@ -69,6 +69,18 @@ module.exports = defineConfig([
     },
   },
   {
+    // Mã ZardUI copy-source (zard-cli add): giữ nguyên selector `zard-*` và
+    // phong cách của upstream để lần `add`/đối chiếu sau không bị lệch.
+    // Chỉ miễn các quy tắc xung đột cấu trúc; quy tắc phụ thuộc lớp vẫn giữ.
+    files: ['src/app/shared/components/**/*.ts', 'src/app/shared/core/**/*.ts'],
+    rules: {
+      '@angular-eslint/component-selector': 'off',
+      '@angular-eslint/directive-selector': 'off',
+      eqeqeq: 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
+  },
+  {
     files: ['**/*.html'],
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
     rules: {},

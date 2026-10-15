@@ -1,3 +1,4 @@
+@layer ng-icon, theme, base, components, utilities;
 @import 'tailwindcss';
 @import 'tw-animate-css';
 /* Tự host font để chạy offline (PWA), không phụ thuộc CDN */
@@ -9,12 +10,15 @@
 @import '@fontsource/be-vietnam-pro/vietnamese-500.css';
 @import '@fontsource/be-vietnam-pro/vietnamese-600.css';
 @import '@fontsource/be-vietnam-pro/vietnamese-700.css';
+/* ZardUI: utilities (no-scrollbar, scrollbar-thin), keyframes, data-* variants. Không chứa token màu. */
+@import './app/shared/core/css/zard';
 
 @custom-variant dark (&:is(.dark *));
 
 /* ====== Theme tokens (ZardUI / shadcn-compatible). Xem docs/CONVENTIONS.md §6 ====== */
 :root {
   --radius: 0.75rem;
+  color-scheme: light;
   --background: #f5f6fa;
   --foreground: #14172b;
   --card: #ffffff;
@@ -58,6 +62,7 @@
 }
 
 .dark {
+  color-scheme: dark;
   --background: #0f1117;
   --foreground: #eceef8;
   --card: #181b25;
@@ -333,6 +338,6 @@ html.theme-light27.dark {
     font-size: var(--app-font-size, 100%);
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased;
+    @apply bg-background font-sans text-foreground antialiased;
   }
 }

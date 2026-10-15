@@ -51,6 +51,7 @@ ESLint chặn: domain import `@angular/*`, `dexie`, `rxjs`, hoặc tầng trên;
 | File | `kebab-case`, hậu tố theo vai trò | `today.page.ts`, `event.repository.ts`, `event.service.ts`, `lunar.spec.ts` |
 | Class | `PascalCase`, **không** thêm hậu tố `Component`, giữ hậu tố vai trò khi cần | `TodayPage`, `EventBadge`, `EventRepository`, `ThemeService` |
 | Selector | tiền tố `app-`, `kebab-case` | `app-event-badge` |
+| Selector (ngoại lệ) | mã ZardUI copy-source trong `shared/components`, `shared/core` giữ tiền tố `zard-` của upstream; ESLint miễn trừ (xem `eslint.config.js`) | `zard-button` |
 | Hằng toàn cục | `UPPER_SNAKE_CASE` | `APP_DB`, `MAX_TIMEOUT` |
 | Hàm/biến | `camelCase`, động từ cho hàm | `getOccurrencesInRange`, `computeFireAt` |
 | Signal | danh từ, không hậu tố `$` hoặc `Signal` | `occurrences`, `selected` |
