@@ -1,0 +1,338 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+/* Tự host font để chạy offline (PWA), không phụ thuộc CDN */
+@import '@fontsource/be-vietnam-pro/latin-400.css';
+@import '@fontsource/be-vietnam-pro/latin-500.css';
+@import '@fontsource/be-vietnam-pro/latin-600.css';
+@import '@fontsource/be-vietnam-pro/latin-700.css';
+@import '@fontsource/be-vietnam-pro/vietnamese-400.css';
+@import '@fontsource/be-vietnam-pro/vietnamese-500.css';
+@import '@fontsource/be-vietnam-pro/vietnamese-600.css';
+@import '@fontsource/be-vietnam-pro/vietnamese-700.css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* ====== Theme tokens (ZardUI / shadcn-compatible). Xem docs/CONVENTIONS.md §6 ====== */
+:root {
+  --radius: 0.75rem;
+  --background: #f5f6fa;
+  --foreground: #14172b;
+  --card: #ffffff;
+  --card-foreground: #14172b;
+  --popover: #ffffff;
+  --popover-foreground: #14172b;
+  --primary: #4f46e5;
+  --primary-foreground: #ffffff;
+  --secondary: #e6e8f2;
+  --secondary-foreground: #14172b;
+  --muted: #e6e8f2;
+  --muted-foreground: #5b6078;
+  --accent: #e4e6ff;
+  --accent-foreground: #14172b;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --border: rgb(20 23 43 / 8%);
+  --input: rgb(20 23 43 / 14%);
+  --ring: #4f46e5;
+  --chart-1: #4f46e5;
+  --chart-2: #fb7185;
+  --chart-3: #fbbf24;
+  --chart-4: #34d399;
+  --chart-5: #b9a7f5;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #14172b;
+  --sidebar-primary: #4f46e5;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e4e6ff;
+  --sidebar-accent-foreground: #14172b;
+  --sidebar-border: rgb(20 23 43 / 8%);
+  --sidebar-ring: #4f46e5;
+  --event-work: #4f46e5;
+  --event-work-ink: #4f46e5;
+  --event-birthday: #fb7185;
+  --event-birthday-ink: #be123c;
+  --event-memorial: #fbbf24;
+  --event-memorial-ink: #92400e;
+  --event-done: #34d399;
+  --event-done-ink: #047857;
+}
+
+.dark {
+  --background: #0f1117;
+  --foreground: #eceef8;
+  --card: #181b25;
+  --card-foreground: #eceef8;
+  --popover: #181b25;
+  --popover-foreground: #eceef8;
+  --primary: #8b86ff;
+  --primary-foreground: #0f1117;
+  --secondary: #232736;
+  --secondary-foreground: #eceef8;
+  --muted: #232736;
+  --muted-foreground: #9aa0b8;
+  --accent: #1b1d3b;
+  --accent-foreground: #eceef8;
+  --destructive: #ff6b6b;
+  --destructive-foreground: #0f1117;
+  --border: rgb(236 238 248 / 10%);
+  --input: rgb(236 238 248 / 16%);
+  --ring: #8b86ff;
+  --chart-1: #8b86ff;
+  --chart-2: #fb7185;
+  --chart-3: #fbbf24;
+  --chart-4: #34d399;
+  --chart-5: #b9a7f5;
+  --sidebar: #181b25;
+  --sidebar-foreground: #eceef8;
+  --sidebar-primary: #8b86ff;
+  --sidebar-primary-foreground: #0f1117;
+  --sidebar-accent: #1b1d3b;
+  --sidebar-accent-foreground: #eceef8;
+  --sidebar-border: rgb(236 238 248 / 10%);
+  --sidebar-ring: #8b86ff;
+  --event-work: #8b86ff;
+  --event-work-ink: #938eff;
+  --event-birthday: #fb7185;
+  --event-birthday-ink: #fda4af;
+  --event-memorial: #fbbf24;
+  --event-memorial-ink: #fcd34d;
+  --event-done: #34d399;
+  --event-done-ink: #34d399;
+}
+
+/* light26 */
+html.theme-light26 {
+  --background: #f0eee9;
+  --foreground: #10302f;
+  --card: #ffffff;
+  --card-foreground: #10302f;
+  --popover: #ffffff;
+  --popover-foreground: #10302f;
+  --primary: #0f6b6c;
+  --primary-foreground: #ffffff;
+  --secondary: #e3e0d8;
+  --secondary-foreground: #10302f;
+  --muted: #e3e0d8;
+  --muted-foreground: #4e6966;
+  --accent: #dcedea;
+  --accent-foreground: #10302f;
+  --destructive: #d3442b;
+  --destructive-foreground: #ffffff;
+  --border: rgb(16 48 47 / 8%);
+  --input: rgb(16 48 47 / 14%);
+  --ring: #0f6b6c;
+  --chart-1: #0f6b6c;
+  --chart-2: #ff7a59;
+  --chart-3: #ffc94a;
+  --chart-4: #8bd17c;
+  --chart-5: #b9a7f5;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #10302f;
+  --sidebar-primary: #0f6b6c;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #dcedea;
+  --sidebar-accent-foreground: #10302f;
+  --sidebar-border: rgb(16 48 47 / 8%);
+  --sidebar-ring: #0f6b6c;
+  --event-work: #0f6b6c;
+  --event-work-ink: #0f6b6c;
+  --event-birthday: #ff7a59;
+  --event-birthday-ink: #bb3d2a;
+  --event-memorial: #ffc94a;
+  --event-memorial-ink: #7a5300;
+  --event-done: #8bd17c;
+  --event-done-ink: #2f7a22;
+}
+
+html.theme-light26.dark {
+  --background: #0b1a1a;
+  --foreground: #e6f2ef;
+  --card: #132726;
+  --card-foreground: #e6f2ef;
+  --popover: #132726;
+  --popover-foreground: #e6f2ef;
+  --primary: #4fc3c0;
+  --primary-foreground: #06201f;
+  --secondary: #1b3433;
+  --secondary-foreground: #e6f2ef;
+  --muted: #1b3433;
+  --muted-foreground: #8fa9a5;
+  --accent: #143634;
+  --accent-foreground: #e6f2ef;
+  --destructive: #ff7a62;
+  --destructive-foreground: #0b1a1a;
+  --border: rgb(230 242 239 / 10%);
+  --input: rgb(230 242 239 / 16%);
+  --ring: #4fc3c0;
+  --chart-1: #4fc3c0;
+  --chart-2: #ff8f72;
+  --chart-3: #ffd466;
+  --chart-4: #9ddc8e;
+  --chart-5: #b9a7f5;
+  --sidebar: #132726;
+  --sidebar-foreground: #e6f2ef;
+  --sidebar-primary: #4fc3c0;
+  --sidebar-primary-foreground: #06201f;
+  --sidebar-accent: #143634;
+  --sidebar-accent-foreground: #e6f2ef;
+  --sidebar-border: rgb(230 242 239 / 10%);
+  --sidebar-ring: #4fc3c0;
+  --event-work: #4fc3c0;
+  --event-work-ink: #4fc3c0;
+  --event-birthday: #ff8f72;
+  --event-birthday-ink: #ff9e85;
+  --event-memorial: #ffd466;
+  --event-memorial-ink: #ffd466;
+  --event-done: #9ddc8e;
+  --event-done-ink: #9ddc8e;
+}
+
+/* light27 */
+html.theme-light27 {
+  --background: #eef3ff;
+  --foreground: #0b1b3f;
+  --card: #ffffff;
+  --card-foreground: #0b1b3f;
+  --popover: #ffffff;
+  --popover-foreground: #0b1b3f;
+  --primary: #2f66e6;
+  --primary-foreground: #ffffff;
+  --secondary: #dce4f7;
+  --secondary-foreground: #0b1b3f;
+  --muted: #dce4f7;
+  --muted-foreground: #4a5a80;
+  --accent: #d3e1ff;
+  --accent-foreground: #0b1b3f;
+  --destructive: #c21f72;
+  --destructive-foreground: #ffffff;
+  --border: rgb(11 27 63 / 8%);
+  --input: rgb(11 27 63 / 14%);
+  --ring: #2f66e6;
+  --chart-1: #2f66e6;
+  --chart-2: #ff6fb5;
+  --chart-3: #e4ff5c;
+  --chart-4: #5be3b0;
+  --chart-5: #b9a7f5;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0b1b3f;
+  --sidebar-primary: #2f66e6;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #d3e1ff;
+  --sidebar-accent-foreground: #0b1b3f;
+  --sidebar-border: rgb(11 27 63 / 8%);
+  --sidebar-ring: #2f66e6;
+  --event-work: #2f66e6;
+  --event-work-ink: #2457e0;
+  --event-birthday: #ff6fb5;
+  --event-birthday-ink: #c21f72;
+  --event-memorial: #e4ff5c;
+  --event-memorial-ink: #4f5e00;
+  --event-done: #5be3b0;
+  --event-done-ink: #0b7a55;
+}
+
+html.theme-light27.dark {
+  --background: #0a1226;
+  --foreground: #e8eeff;
+  --card: #121c38;
+  --card-foreground: #e8eeff;
+  --popover: #121c38;
+  --popover-foreground: #e8eeff;
+  --primary: #7aa2ff;
+  --primary-foreground: #08122b;
+  --secondary: #1b2848;
+  --secondary-foreground: #e8eeff;
+  --muted: #1b2848;
+  --muted-foreground: #8f9cc4;
+  --accent: #16254f;
+  --accent-foreground: #e8eeff;
+  --destructive: #ff7fb8;
+  --destructive-foreground: #0a1226;
+  --border: rgb(232 238 255 / 10%);
+  --input: rgb(232 238 255 / 16%);
+  --ring: #7aa2ff;
+  --chart-1: #7aa2ff;
+  --chart-2: #ff8cc6;
+  --chart-3: #e4ff5c;
+  --chart-4: #5be3b0;
+  --chart-5: #b9a7f5;
+  --sidebar: #121c38;
+  --sidebar-foreground: #e8eeff;
+  --sidebar-primary: #7aa2ff;
+  --sidebar-primary-foreground: #08122b;
+  --sidebar-accent: #16254f;
+  --sidebar-accent-foreground: #e8eeff;
+  --sidebar-border: rgb(232 238 255 / 10%);
+  --sidebar-ring: #7aa2ff;
+  --event-work: #7aa2ff;
+  --event-work-ink: #7aa2ff;
+  --event-birthday: #ff8cc6;
+  --event-birthday-ink: #ff8cc6;
+  --event-memorial: #e4ff5c;
+  --event-memorial-ink: #e4ff5c;
+  --event-done: #5be3b0;
+  --event-done-ink: #5be3b0;
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Nhóm sự kiện (token riêng của Event Reminder) */
+  --color-event-work: var(--event-work);
+  --color-event-work-ink: var(--event-work-ink);
+  --color-event-birthday: var(--event-birthday);
+  --color-event-birthday-ink: var(--event-birthday-ink);
+  --color-event-memorial: var(--event-memorial);
+  --color-event-memorial-ink: var(--event-memorial-ink);
+  --color-event-done: var(--event-done);
+  --color-event-done-ink: var(--event-done-ink);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    font-size: var(--app-font-size, 100%);
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
