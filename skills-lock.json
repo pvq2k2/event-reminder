@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "skills": {
+    "zard": {
+      "source": "zard-ui/zardui",
+      "sourceType": "github",
+      "skillPath": "skills/zard/SKILL.md",
+      "computedHash": "4c2abfd32b323b51c57e4c90452ca7b7f2443b35c0785d798843fdede6e74403"
+    },
+    "zard-migration": {
+      "source": "zard-ui/zardui",
+      "sourceType": "github",
+      "skillPath": "skills/zard-migration/SKILL.md",
+      "computedHash": "8ee108bf0bff2544aab4eb715fbcdbecdc9eafa09b997400eeebcb8e2e21255c"
+    }
+  }
+}
