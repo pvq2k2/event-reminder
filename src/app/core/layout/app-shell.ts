@@ -1,6 +1,11 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { filter, map } from 'rxjs';
 import { AppIcon, type IconName } from '@shared/ui/icon';
+import { ZardSonnerComponent } from '@shared/components/sonner';
+import { ToastService } from '@shared/ui/toast';
+import { ThemeService } from '@core/theme/theme.service';
 
 interface NavItem {
   path: string;
@@ -9,17 +14,18 @@ interface NavItem {
 }
 
 /**
- * Khung responsive (mobile-first). Cùng một danh sách điều hướng, ba cách hiển thị:
- *  - < md: thanh tab dưới đáy   - md: rail icon   - lg+: sidebar đầy đủ.
+ * Khung responsive (mobile-first). Khóa theo viewport (`h-dvh`): main cố định,
+ * từng page tự chia header cố định + vùng scroll + footer.
+ *  - < md: thanh tab dưới đáy (ẩn ở trang tạo/sửa sự kiện)   - md: rail icon   - lg+: sidebar đầy đủ.
  */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, AppIcon],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, AppIcon, ZardSonnerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="flex min-h-dvh bg-background text-foreground">
+    <div class="flex h-dvh overflow-hidden bg-background text-foreground">
       <aside
-        class="sticky top-0 hidden h-dvh shrink-0 flex-col gap-1 border-r border-sidebar-border bg-sidebar p-3 text-sidebar-foreground md:flex md:w-16 lg:w-64"
+        class="hidden scrollbar-thin h-dvh shrink-0 flex-col gap-1 overflow-y-auto border-r border-sidebar-border bg-sidebar p-3 text-sidebar-foreground md:flex md:w-16 lg:w-64"
       >
         <div class="mb-4 flex items-center gap-2 px-2 py-1">
           <span class="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground"
@@ -40,26 +46,50 @@ interface NavItem {
         }
       </aside>
 
-      <main class="min-w-0 flex-1 pb-24 md:pb-0"><router-outlet /></main>
-
-      <nav
-        class="fixed inset-x-0 bottom-0 z-20 flex border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden"
-        aria-label="Điều hướng chính"
+      <main
+        class="min-h-0 min-w-0 flex-1 overflow-hidden md:pb-0"
+        [class.pb-[calc(4rem+env(safe-area-inset-bottom))]]="!hideMobileNav()"
       >
-        @for (item of nav; track item.path) {
-          <a
-            [routerLink]="item.path"
-            routerLinkActive="text-primary font-semibold"
-            class="flex h-16 flex-1 flex-col items-center justify-center gap-1 text-[0.6875rem] text-muted-foreground"
-          >
-            <app-icon [name]="item.icon" />{{ item.label }}
-          </a>
-        }
-      </nav>
+        <router-outlet />
+      </main>
+      @defer (when toast.hostNeeded()) {
+        <z-sonner [theme]="theme.mode()" position="bottom-center" />
+      }
+
+      @if (!hideMobileNav()) {
+        <nav
+          class="fixed inset-x-0 bottom-0 z-20 flex border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden"
+          aria-label="Điều hướng chính"
+        >
+          @for (item of nav; track item.path) {
+            <a
+              [routerLink]="item.path"
+              routerLinkActive="text-primary font-semibold"
+              class="flex h-16 flex-1 flex-col items-center justify-center gap-1 text-[0.6875rem] text-muted-foreground"
+            >
+              <app-icon [name]="item.icon" />{{ item.label }}
+            </a>
+          }
+        </nav>
+      }
     </div>
   `,
 })
 export class AppShell {
+  private readonly router = inject(Router);
+  protected readonly theme = inject(ThemeService);
+  protected readonly toast = inject(ToastService);
+  /**
+   * Trang tạo/sửa sự kiện trên mobile là sheet toàn màn hình (design Step1–Step4):
+   * ẩn tab bar dưới, sidebar desktop giữ nguyên (design WebCreateDialog).
+   */
+  protected readonly hideMobileNav = toSignal(
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      map((e) => e.urlAfterRedirects.startsWith('/events')),
+    ),
+    { initialValue: this.router.url.startsWith('/events') },
+  );
   protected readonly nav: NavItem[] = [
     { path: '/today', label: 'Hôm nay', icon: 'today' },
     { path: '/calendar', label: 'Lịch', icon: 'calendar' },
