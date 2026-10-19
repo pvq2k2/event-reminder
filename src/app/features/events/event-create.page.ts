@@ -278,13 +278,25 @@ type RepeatKind = 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly-solar' | 'ye
                 role="radio"
                 [attr.aria-checked]="repeatKind() === r.id"
                 (click)="setRepeat(r.id)"
-                class="rounded-xl border p-3 text-left"
+                class="flex items-center gap-3 rounded-xl border p-3 text-left"
                 [class.border-primary]="repeatKind() === r.id"
                 [class.border-border]="repeatKind() !== r.id"
                 [class.bg-accent]="repeatKind() === r.id"
               >
-                <b class="block text-sm">{{ r.label }}</b
-                ><span class="text-xs text-muted-foreground">{{ r.hint }}</span>
+                <i
+                  aria-hidden="true"
+                  class="flex size-5.5 shrink-0 items-center justify-center rounded-full border-2"
+                  [class.border-primary]="repeatKind() === r.id"
+                  [class.border-muted-foreground]="repeatKind() !== r.id"
+                >
+                  @if (repeatKind() === r.id) {
+                    <i class="size-2.5 rounded-full bg-primary"></i>
+                  }
+                </i>
+                <span class="flex-1">
+                  <b class="block text-sm">{{ r.label }}</b>
+                  <span class="text-xs text-muted-foreground">{{ r.hint }}</span>
+                </span>
               </button>
             }
           </div>
@@ -415,62 +427,61 @@ type RepeatKind = 'none' | 'daily' | 'weekly' | 'monthly' | 'yearly-solar' | 'ye
 
         @if (step() === 4) {
           <h1 class="text-2xl font-bold tracking-tight">Nhắc bạn lúc nào?</h1>
-          <div class="mt-3 flex flex-wrap gap-2">
-            @for (o of selectedOffsets(); track o) {
-              <button
-                z-button
-                type="button"
-                (click)="toggleOffset(o)"
-                [attr.aria-label]="offsetLabel(o) + ', bấm để gỡ'"
-                class="h-11 rounded-full px-4 text-sm md:h-9"
-              >
-                {{ offsetLabel(o) }} <app-icon name="x" [size]="14" />
-              </button>
-            } @empty {
-              <p class="text-sm text-muted-foreground">Chưa có mốc nhắc nào.</p>
+          <div class="mt-4 overflow-hidden rounded-2xl border border-border bg-card">
+            @for (o of reminderRows(); track o) {
+              <div class="flex items-center gap-3 border-b border-border px-3.5 py-2.5 last:border-b-0">
+                <span
+                  class="flex size-8.5 shrink-0 items-center justify-center rounded-xl bg-event-work/15 text-event-work-ink"
+                >
+                  <app-icon name="bell" [size]="16" />
+                </span>
+                <span class="flex-1 text-sm">{{ offsetLabel(o) }}</span>
+                <z-switch [zChecked]="selectedOffsets().includes(o)" (zCheckedChange)="toggleOffset(o)">
+                  <span class="sr-only">{{ offsetLabel(o) }}</span>
+                </z-switch>
+              </div>
             }
           </div>
-          @if (addableOffsets().length) {
-            <p class="mt-4 text-xs font-semibold tracking-wider text-muted-foreground">THÊM MỐC NHẮC</p>
-            <div class="mt-2 flex flex-wrap gap-2">
-              @for (o of addableOffsets(); track o) {
-                <button
-                  z-button
-                  zType="secondary"
-                  type="button"
-                  (click)="toggleOffset(o)"
-                  class="h-11 rounded-full px-4 text-sm md:h-9"
-                >
-                  + {{ offsetLabel(o) }}
-                </button>
-              }
+          <button
+            z-button
+            zType="secondary"
+            zSize="sm"
+            zShape="circle"
+            type="button"
+            [attr.aria-expanded]="showCustom()"
+            (click)="showCustom.set(!showCustom())"
+            class="mt-2 cursor-pointer"
+          >
+            + Thêm mốc nhắc
+          </button>
+          @if (showCustom()) {
+            <div class="mt-2 flex items-end gap-2">
+              <div class="flex-1">
+                <app-field label="Số phút tùy chọn"
+                  ><input
+                    z-input
+                    type="number"
+                    [formControl]="customOffset"
+                    min="0"
+                    max="10080"
+                    class="h-11 bg-card md:h-9"
+                /></app-field>
+              </div>
+              <button z-button zType="outline" zSize="lg" type="button" (click)="addCustomOffset()" class="h-11 md:h-9">
+                Thêm
+              </button>
             </div>
           }
-          <div class="mt-3 flex items-end gap-2">
-            <div class="flex-1">
-              <app-field label="Số phút tùy chọn"
-                ><input
-                  z-input
-                  type="number"
-                  [formControl]="customOffset"
-                  min="0"
-                  max="10080"
-                  class="h-11 bg-card md:h-9"
-              /></app-field>
-            </div>
-            <button z-button zType="outline" zSize="lg" type="button" (click)="addCustomOffset()" class="h-11 md:h-9">
-              Thêm
-            </button>
-          </div>
           <div class="mt-3">
             <app-field label="Giờ nhắc cho sự kiện cả ngày"
               ><input z-input type="time" formControlName="allDayTime" class="h-11 bg-card md:h-9"
             /></app-field>
           </div>
-          <div class="mt-4 rounded-xl border border-border bg-card p-4">
-            <b class="text-sm">Xem lại</b>
-            <p class="mt-1 text-sm font-semibold">{{ form.controls.title.value || '(chưa có tiêu đề)' }}</p>
-            <p class="text-sm text-muted-foreground">{{ summary() }}</p>
+          <p class="mt-4 text-xs font-semibold tracking-wider text-muted-foreground">XEM LẠI</p>
+          <div class="mt-2 rounded-xl border border-border bg-card p-4">
+            <b class="block text-sm">{{ form.controls.title.value || '(chưa có tiêu đề)' }}</b>
+            <p class="mt-1.5 text-sm text-muted-foreground">{{ reviewLine1() }}</p>
+            <p class="text-sm text-muted-foreground">{{ reviewLine2() }}</p>
             <p class="text-sm text-muted-foreground">
               {{ selectedOffsets().length }} mốc nhắc · {{ selectedContacts().length }} người liên quan
             </p>
@@ -588,13 +599,13 @@ export class EventCreatePage {
     category: new FormControl<EventCategory>('memorial', { nonNullable: true }),
     location: new FormControl('', { nonNullable: true }),
     description: new FormControl('', { nonNullable: true }),
-    calendarSystem: new FormControl<'gregorian' | 'lunar'>('lunar', { nonNullable: true }),
+    calendarSystem: new FormControl<'gregorian' | 'lunar'>('gregorian', { nonNullable: true }),
     startDate: new FormControl(this.clock.todayIso(), { nonNullable: true }),
     lunarDay: new FormControl(29, { nonNullable: true }),
     lunarMonth: new FormControl(8, { nonNullable: true }),
     lunarYear: new FormControl(2026, { nonNullable: true }),
     isLeapMonth: new FormControl(false, { nonNullable: true }),
-    isAllDay: new FormControl(false, { nonNullable: true }),
+    isAllDay: new FormControl(true, { nonNullable: true }),
     startTime: new FormControl('19:00', { nonNullable: true }),
     endTime: new FormControl('21:00', { nonNullable: true }),
     repeatKind: new FormControl<RepeatKind>('yearly-lunar', { nonNullable: true }),
@@ -622,7 +633,12 @@ export class EventCreatePage {
   protected readonly selectedContacts = signal<string[]>([]);
   protected readonly selectedWeekdays = signal<number[]>([5]);
   protected readonly selectedOffsets = signal<number[]>([1440, 60, 30]);
-  protected readonly addableOffsets = computed(() => QUICK_OFFSETS.filter((o) => !this.selectedOffsets().includes(o)));
+  protected readonly showCustom = signal(false);
+  /** Các mốc nhắc hiển thị dạng danh sách công tắc: mốc nhanh + mốc tùy chọn đã chọn. */
+  protected readonly reminderRows = computed(() => [
+    ...QUICK_OFFSETS,
+    ...this.selectedOffsets().filter((o) => !QUICK_OFFSETS.includes(o)),
+  ]);
   // Các getter dưới là method (không phải computed) vì giá trị form không phải
   // signal: computed sẽ chỉ tính một lần và kẹt mãi giá trị đầu.
   protected repeatKind(): RepeatKind {
@@ -726,15 +742,28 @@ export class EventCreatePage {
     }
   }
 
-  protected summary(): string {
-    const sys =
-      this.form.controls.calendarSystem.value === 'lunar'
-        ? `âm ${this.form.controls.lunarDay.value}/${this.form.controls.lunarMonth.value}`
-        : formatVi(this.form.controls.startDate.value || '');
+  /** Dòng 1 thẻ "Xem lại": ngày (âm/dương) · giờ. */
+  protected reviewLine1(): string {
     const time = this.form.controls.isAllDay.value
       ? 'cả ngày'
       : `${this.form.controls.startTime.value}–${this.form.controls.endTime.value}`;
-    return `${sys} · ${time} · ${this.repeats.find((r) => r.id === this.repeatKind())?.label ?? ''}`;
+    if (this.form.controls.calendarSystem.value === 'lunar') {
+      const resolved = this.lunarResolved();
+      return [
+        `âm ${this.form.controls.lunarDay.value}/${this.form.controls.lunarMonth.value}`,
+        resolved ? formatVi(resolved) : '',
+        time,
+      ]
+        .filter(Boolean)
+        .join(' · ');
+    }
+    return [formatVi(this.form.controls.startDate.value || ''), time].filter(Boolean).join(' · ');
+  }
+  /** Dòng 2 thẻ "Xem lại": kiểu lặp · địa điểm. */
+  protected reviewLine2(): string {
+    const repeat = this.repeats.find((r) => r.id === this.repeatKind())?.label ?? '';
+    const location = this.form.controls.location.value.trim();
+    return location ? `${repeat} · ${location}` : repeat;
   }
 
   protected canChi = (y: number) => canChiYear(y);
@@ -927,7 +956,7 @@ export class EventCreatePage {
     this.saveError.set(null);
     this.saving.set(true);
     try {
-      const created = await this.events.create(input);
+      await this.events.create(input);
       try {
         const s = await this.settings.get();
         if (input.isAllDay && this.form.controls.allDayTime.value !== s.allDayReminderTime) {
@@ -937,7 +966,7 @@ export class EventCreatePage {
         /* giữ allDayReminderTime cũ khi settings lỗi */
       }
       this.toast.show('Đã tạo sự kiện');
-      await this.router.navigate(['/events', created.id]);
+      await this.router.navigate(['/today']);
     } catch (e) {
       if (e instanceof EventValidationError) {
         const keys = Object.keys(e.errors);
