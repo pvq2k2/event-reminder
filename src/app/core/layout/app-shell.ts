@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { AppIcon, type IconName } from '@shared/ui/icon';
+import { AppLogo } from '@shared/ui/logo';
 import { ZardSonnerComponent } from '@shared/components/sonner';
 import { ToastService } from '@shared/ui/toast';
 import { ThemeService } from '@core/theme/theme.service';
@@ -20,7 +21,7 @@ interface NavItem {
  */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, AppIcon, ZardSonnerComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, AppIcon, AppLogo, ZardSonnerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex h-dvh overflow-hidden bg-background text-foreground">
@@ -28,9 +29,7 @@ interface NavItem {
         class="hidden scrollbar-thin h-dvh shrink-0 flex-col gap-1 overflow-y-auto border-r border-sidebar-border bg-sidebar p-3 text-sidebar-foreground md:flex md:w-16 lg:w-64"
       >
         <div class="mb-4 flex items-center gap-2 px-2 py-1">
-          <span class="grid size-8 place-items-center rounded-lg bg-primary text-primary-foreground"
-            ><app-icon name="moon" [size]="18"
-          /></span>
+          <app-logo [size]="32" />
           <b class="hidden text-sm lg:block">Event Reminder</b>
         </div>
         @for (item of nav; track item.path) {

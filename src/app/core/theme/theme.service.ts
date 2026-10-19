@@ -30,7 +30,8 @@ const read = <T extends string>(key: string, allowed: readonly T[], fallback: T)
 /** Lưu ở localStorage (đọc đồng bộ) để áp dụng trước lần render đầu, tránh nháy sáng/tối. */
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
-  private readonly html = inject(DOCUMENT).documentElement;
+  private readonly doc = inject(DOCUMENT);
+  private readonly html = this.doc.documentElement;
   readonly theme = signal<AppTheme>(
     read(
       'er.theme',
@@ -53,6 +54,7 @@ export class ThemeService {
       if (theme !== 'default') this.html.classList.add(`theme-${theme}`);
       this.html.classList.toggle('dark', mode === 'dark' || (mode === 'system' && this.systemDark()));
       this.html.style.setProperty('--app-font-size', `${FONT_SCALES[font].percent}%`);
+      this.syncThemeColor();
       try {
         localStorage.setItem('er.theme', theme);
         localStorage.setItem('er.mode', mode);
@@ -61,5 +63,18 @@ export class ThemeService {
         /* chế độ riêng tư có thể chặn storage */
       }
     });
+  }
+
+  /** Đồng bộ `<meta name="theme-color">` với màu nền hiện tại (thanh trạng thái trình duyệt/PWA). */
+  private syncThemeColor(): void {
+    const value = getComputedStyle(this.html).getPropertyValue('--background').trim();
+    if (!value) return;
+    let meta = this.doc.head.querySelector('meta[name="theme-color"]');
+    if (!meta) {
+      meta = this.doc.createElement('meta');
+      meta.setAttribute('name', 'theme-color');
+      this.doc.head.appendChild(meta);
+    }
+    meta.setAttribute('content', value);
   }
 }
