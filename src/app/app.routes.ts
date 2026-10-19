@@ -30,7 +30,7 @@ export const routes: Routes = [
       {
         path: 'events/new',
         title: 'Tạo sự kiện · Event Reminder',
-        loadComponent: () => import('./features/events/event-create.page').then((m) => m.EventCreatePage),
+        loadComponent: () => import('./features/events/event-create/event-create.page').then((m) => m.EventCreatePage),
       },
       {
         path: 'events/:id',
