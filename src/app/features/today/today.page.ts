@@ -15,10 +15,10 @@ import { NotificationPermissionService } from '@core/notifications/notification-
 import { ZardAlertComponent } from '@shared/components/alert';
 import { ZardButtonComponent } from '@shared/components/button';
 import { ZardCardImports } from '@shared/components/card';
+import { ZardSonnerService } from '@shared/components/sonner/sonner.service';
 import { EmptyState } from '@shared/ui/empty-state';
 import { eventCategoryStyle } from '@shared/ui/event-category';
 import { AppIcon } from '@shared/ui/icon';
-import { ToastService } from '@shared/ui/toast';
 import { formatCountdown, formatRelativeDay, greetingVi } from '@shared/utils/format';
 import { TodayHeader } from './today-header';
 import { TodayNextCard } from './today-next-card';
@@ -189,7 +189,7 @@ export class TodayPage {
   private readonly settingsRepo = inject(SettingsRepository);
   private readonly schedules = inject(NotificationScheduleRepository);
   private readonly clock = inject(Clock);
-  private readonly toast = inject(ToastService);
+  private readonly sonner = inject(ZardSonnerService);
   private readonly reconciler = inject(ReminderReconciler);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly permission = inject(NotificationPermissionService);
@@ -296,7 +296,7 @@ export class TodayPage {
   protected async requestPermission(): Promise<void> {
     const state = await this.permission.request();
     if (state === 'denied') {
-      this.toast.show('Trình duyệt đã chặn thông báo. Hãy bật lại trong cài đặt trình duyệt.');
+      this.sonner.warning('Trình duyệt đã chặn thông báo. Hãy bật lại trong cài đặt trình duyệt.');
     }
   }
 
@@ -305,9 +305,9 @@ export class TodayPage {
     this.retrying.set(true);
     try {
       await this.reconciler.reconcile();
-      this.toast.show('Đã thử lại lịch nhắc');
+      this.sonner.success('Đã thử lại lịch nhắc');
     } catch {
-      this.toast.show('Không thử lại được lịch nhắc. Vui lòng thử lại sau.');
+      this.sonner.error('Không thử lại được lịch nhắc. Vui lòng thử lại sau.');
     } finally {
       this.retrying.set(false);
     }

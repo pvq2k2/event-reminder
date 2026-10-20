@@ -50,9 +50,9 @@ const STEP_COOLDOWN_MS = 120;
         tabindex="0"
         (scroll)="onScroll()"
         (keydown)="onKeydown($event)"
-        class="relative no-scrollbar h-45 snap-y snap-mandatory overflow-y-auto overscroll-contain [mask-image:linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] outline-none"
+        class="relative no-scrollbar h-45 snap-y snap-mandatory overflow-y-auto overscroll-contain mask-[linear-gradient(to_bottom,transparent,black_25%,black_75%,transparent)] outline-none"
       >
-        <div class="h-[72px] shrink-0" aria-hidden="true"></div>
+        <div class="h-18 shrink-0" aria-hidden="true"></div>
         @for (o of options(); track o.value) {
           <button
             type="button"
@@ -63,12 +63,12 @@ const STEP_COOLDOWN_MS = 120;
             [class.text-foreground]="o.value === value()"
             [class.text-muted-foreground]="o.value !== value()"
             [class.text-xl]="o.value === value()"
-            class="relative z-[1] flex h-9 w-full snap-center items-center justify-center text-lg"
+            class="relative z-1 flex h-9 w-full snap-center items-center justify-center text-lg"
           >
             {{ o.label }}
           </button>
         }
-        <div class="h-[72px] shrink-0" aria-hidden="true"></div>
+        <div class="h-18 shrink-0" aria-hidden="true"></div>
       </div>
     </div>
   `,

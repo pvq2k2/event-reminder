@@ -6,8 +6,8 @@ import { EventService } from '@core/data/event.service';
 import { SettingsRepository } from '@core/data/settings.repository';
 import { ZardAlertComponent } from '@shared/components/alert';
 import { ZardButtonComponent } from '@shared/components/button';
+import { ZardSonnerService } from '@shared/components/sonner/sonner.service';
 import { AppIcon } from '@shared/ui/icon';
-import { ToastService } from '@shared/ui/toast';
 import { mergeClasses } from '@shared/utils/merge-classes';
 import { EventCreateStore } from './event-create.store';
 import { StepBasics } from './step-basics';
@@ -116,7 +116,7 @@ export class EventCreatePage {
   private readonly events = inject(EventService);
   private readonly settings = inject(SettingsRepository);
   private readonly router = inject(Router);
-  private readonly toast = inject(ToastService);
+  private readonly sonner = inject(ZardSonnerService);
 
   protected readonly store = inject(EventCreateStore);
   protected readonly step = signal(1);
@@ -188,7 +188,7 @@ export class EventCreatePage {
       } catch {
         /* giữ allDayReminderTime cũ khi settings lỗi */
       }
-      this.toast.show('Đã tạo sự kiện');
+      this.sonner.success('Đã tạo sự kiện');
       await this.router.navigate(['/']);
     } catch (e) {
       if (e instanceof EventValidationError) {

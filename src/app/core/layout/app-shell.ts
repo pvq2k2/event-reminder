@@ -5,7 +5,6 @@ import { filter, map } from 'rxjs';
 import { AppIcon, type IconName } from '@shared/ui/icon';
 import { AppLogo } from '@shared/ui/logo';
 import { ZardSonnerComponent } from '@shared/components/sonner';
-import { ToastService } from '@shared/ui/toast';
 import { ThemeService } from '@core/theme/theme.service';
 
 interface NavItem {
@@ -51,8 +50,14 @@ interface NavItem {
       >
         <router-outlet />
       </main>
-      @defer (when toast.hostNeeded()) {
-        <z-sonner [theme]="theme.mode()" position="bottom-center" />
+      @defer (on idle) {
+        <z-sonner
+          [theme]="theme.mode()"
+          position="bottom-center"
+          [richColors]="true"
+          [closeButton]="true"
+          [duration]="5000"
+        />
       }
 
       @if (!hideMobileNav()) {
@@ -77,7 +82,6 @@ interface NavItem {
 export class AppShell {
   private readonly router = inject(Router);
   protected readonly theme = inject(ThemeService);
-  protected readonly toast = inject(ToastService);
   /**
    * Trang tạo/sửa sự kiện trên mobile là sheet toàn màn hình (design Step1–Step4):
    * ẩn tab bar dưới, sidebar desktop giữ nguyên (design WebCreateDialog).
