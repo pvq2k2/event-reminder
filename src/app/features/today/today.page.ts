@@ -1,125 +1,320 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { liveQuery } from 'dexie';
-import { from } from 'rxjs';
+import { from, switchMap } from 'rxjs';
 import { Clock } from '@core/data/clock';
 import { EventRepository } from '@core/data/event.repository';
-import { addDays } from '@core/domain/date';
-import { formatLunar, gregorianToLunar } from '@core/domain/lunar';
-import type { Occurrence } from '@core/domain/models';
+import { NotificationScheduleRepository } from '@core/data/notification-schedule.repository';
+import { DEFAULT_SETTINGS, SettingsRepository } from '@core/data/settings.repository';
+import { addDays, epochMsToVnLocal, parseIso, vnLocalToEpochMs } from '@core/domain/date';
+import { canChiYear, formatLunar, gregorianToLunar } from '@core/domain/lunar';
+import type { NotificationSchedule, Occurrence } from '@core/domain/models';
+import { ReminderReconciler } from '@core/notifications/reminder-reconciler';
+import { NotificationPermissionService } from '@core/notifications/notification-permission.service';
+import { ZardAlertComponent } from '@shared/components/alert';
+import { ZardButtonComponent } from '@shared/components/button';
+import { ZardCardImports } from '@shared/components/card';
+import { EmptyState } from '@shared/ui/empty-state';
+import { eventCategoryStyle } from '@shared/ui/event-category';
 import { AppIcon } from '@shared/ui/icon';
-import { EventBadge } from '@shared/ui/event-badge';
-import { formatVi, formatViShort, weekdayVi } from '@shared/utils/format';
+import { ToastService } from '@shared/ui/toast';
+import { formatCountdown, formatRelativeDay, greetingVi } from '@shared/utils/format';
+import { TodayHeader } from './today-header';
+import { TodayNextCard } from './today-next-card';
+import { TodaySidebar, type TodayMonthDay } from './today-sidebar';
+import { TodaySkeleton } from './today-skeleton';
+import { TodayTimeline } from './today-timeline';
+import { buildMonthGrid, buildWeek, pickNext, todayQueryRange } from './today.utils';
+import { TodayWeekStrip, type TodayWeekDay } from './today-week-strip';
 
 @Component({
   selector: 'app-today-page',
-  imports: [RouterLink, AppIcon, EventBadge],
+  imports: [
+    RouterLink,
+    AppIcon,
+    TodayHeader,
+    TodayWeekStrip,
+    TodayNextCard,
+    TodayTimeline,
+    TodaySidebar,
+    TodaySkeleton,
+    EmptyState,
+    ZardAlertComponent,
+    ZardButtonComponent,
+    ...ZardCardImports,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   // Host phải block + cao full để khung header-scroll bên trong tính đúng.
   host: { class: 'block h-full min-h-0' },
   template: `
-    <div class="mx-auto flex h-full min-h-0 w-full max-w-5xl flex-col">
-      <header class="shrink-0 px-4 pt-4 md:px-6 md:pt-6">
-        <div class="flex items-start justify-between gap-4">
-          <div>
-            <p class="text-sm text-muted-foreground">{{ weekday }}</p>
-            <h1 class="text-2xl font-bold tracking-tight md:text-3xl">{{ date }}</h1>
-            <p class="mt-1 inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-              <app-icon name="moon" [size]="16" /> Âm lịch: {{ lunar }}
-            </p>
-          </div>
-          <a
-            routerLink="/events/new"
-            class="inline-flex h-11 items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground md:h-9"
-          >
-            <app-icon name="plus" [size]="16" /> Thêm sự kiện
-          </a>
-        </div>
-      </header>
-      <div class="scrollbar-thin min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 md:px-6 md:py-6">
-        <div class="flex flex-col gap-6">
-          @if (occurrences() === null) {
-            <div class="grid gap-3" aria-busy="true" aria-label="Đang tải">
-              @for (i of [1, 2, 3]; track i) {
-                <div class="h-16 animate-pulse rounded-xl bg-muted"></div>
-              }
-            </div>
-          } @else if (isEmpty()) {
-            <section
-              class="grid place-items-center gap-3 rounded-xl border border-dashed border-border p-10 text-center"
-            >
-              <h2 class="text-lg font-semibold">Hôm nay thảnh thơi</h2>
-              <p class="max-w-sm text-sm text-muted-foreground">
-                Chưa có sự kiện nào trong 7 ngày tới. Thêm ngày giỗ, sinh nhật hay lịch hẹn để được nhắc đúng lúc.
-              </p>
-              <a
-                routerLink="/events/new"
-                class="inline-flex h-11 items-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground md:h-9"
-                >Thêm sự kiện đầu tiên</a
+    <div class="mx-auto flex h-full min-h-0 w-full max-w-6xl flex-col">
+      <app-today-header
+        class="animate-in duration-300 fade-in motion-reduce:animate-none"
+        [today]="today()"
+        [lunar]="lunar()"
+        [canChi]="canChi()"
+        [greeting]="greeting()"
+        [showLunar]="showLunar()"
+      />
+
+      <div class="scrollbar-thin min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 pb-2 md:p-6 md:pb-3">
+        @if (occurrences() === null) {
+          <app-today-skeleton />
+        } @else {
+          <div class="flex flex-col gap-4">
+            <app-today-week-strip
+              class="animate-in duration-300 fill-mode-both fade-in slide-in-from-bottom-2 motion-reduce:animate-none"
+              [days]="weekDays()"
+            />
+
+            @if (permission.state() === 'default' || permission.state() === 'denied') {
+              <section
+                class="flex animate-in flex-col gap-3 rounded-xl border border-border bg-accent p-4 text-accent-foreground delay-75 duration-300 fill-mode-both fade-in slide-in-from-bottom-2 motion-reduce:animate-none sm:flex-row sm:items-center"
+                aria-label="Quyền thông báo"
               >
-            </section>
-          } @else {
-            @if (next(); as n) {
-              <section class="rounded-xl bg-primary p-5 text-primary-foreground">
-                <p class="text-xs font-semibold tracking-wider opacity-85">SỰ KIỆN TIẾP THEO</p>
-                <h2 class="mt-1 text-xl font-bold">{{ n.title }}</h2>
-                <p class="text-sm opacity-90">{{ n.startTime }} · {{ lunarOf(n) }} âm lịch</p>
+                <span class="text-primary"><app-icon name="bell" [size]="20" /></span>
+                <p class="flex-1 text-sm">
+                  @if (permission.state() === 'default') {
+                    <b>Chưa bật thông báo</b>
+                    <span class="text-muted-foreground"> · Chỉ nhắc khi ứng dụng đang mở hoặc đã cài PWA.</span>
+                  } @else {
+                    <b>Thông báo đang bị chặn</b>
+                    <span class="text-muted-foreground"> · Bật lại trong cài đặt trình duyệt để nhận lời nhắc.</span>
+                  }
+                </p>
+                @if (permission.state() === 'default') {
+                  <button z-button zSize="lg" type="button" (click)="requestPermission()" class="h-11 shrink-0 md:h-9">
+                    Bật thông báo
+                  </button>
+                } @else {
+                  <a z-button zType="outline" zSize="lg" routerLink="/settings" class="h-11 shrink-0 md:h-9">
+                    Mở cài đặt
+                  </a>
+                }
               </section>
             }
-            <section class="grid gap-6 lg:grid-cols-[1fr_320px]">
-              <div class="rounded-xl border border-border bg-card p-4">
-                <h2 class="mb-2 font-semibold">Lịch trình hôm nay</h2>
-                @for (o of todayItems(); track o.occurrenceKey) {
-                  <div class="flex items-center gap-3 border-t border-border py-3 first:border-0">
-                    <span class="w-14 text-sm font-semibold text-muted-foreground">{{
-                      o.isAllDay ? 'Cả ngày' : o.startTime
-                    }}</span>
-                    <span class="flex-1 font-medium">{{ o.title }}</span>
-                    <app-event-badge [category]="o.category" />
-                  </div>
-                } @empty {
-                  <p class="py-3 text-sm text-muted-foreground">Không có sự kiện hôm nay.</p>
-                }
+
+            <ng-template #retryTpl>
+              <button
+                z-button
+                zType="outline"
+                zSize="sm"
+                type="button"
+                [zLoading]="retrying()"
+                (click)="retryReminders()"
+              >
+                Thử lại
+              </button>
+            </ng-template>
+
+            @if (failureCount() > 0) {
+              <z-alert
+                class="animate-in delay-100 duration-300 fill-mode-both fade-in slide-in-from-bottom-2 motion-reduce:animate-none"
+                zType="destructive"
+                [zTitle]="'Không đặt được ' + failureCount() + ' lời nhắc'"
+                zDescription="Sự kiện vẫn được lưu. Thử lại để cập nhật lịch nhắc."
+                [zAction]="retryTpl"
+              />
+            }
+
+            @if (isEmpty()) {
+              <app-empty-state
+                class="animate-in delay-100 duration-300 fill-mode-both fade-in slide-in-from-bottom-2 motion-reduce:animate-none"
+                icon="calendar"
+                title="Hôm nay thảnh thơi"
+                description="Chưa có sự kiện nào trong 7 ngày tới. Thêm ngày giỗ, sinh nhật hay lịch hẹn để được nhắc đúng lúc."
+                actionLabel="Thêm sự kiện đầu tiên"
+                actionLink="/events/new"
+              >
+                <div class="mt-2 flex flex-wrap justify-center gap-2">
+                  <span class="rounded-full bg-event-birthday/20 px-3 py-1 text-xs font-medium text-event-birthday-ink"
+                    >Sinh nhật</span
+                  >
+                  <span class="rounded-full bg-event-memorial/20 px-3 py-1 text-xs font-medium text-event-memorial-ink"
+                    >Ngày giỗ</span
+                  >
+                  <span class="rounded-full bg-event-work/15 px-3 py-1 text-xs font-medium text-event-work-ink"
+                    >Lịch hẹn</span
+                  >
+                </div>
+              </app-empty-state>
+            } @else {
+              <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+                <div class="flex min-w-0 flex-col gap-4">
+                  @if (next(); as n) {
+                    <app-today-next-card
+                      class="animate-in delay-150 duration-300 fill-mode-both fade-in slide-in-from-bottom-2 motion-reduce:animate-none"
+                      [next]="n"
+                      [countdown]="nextCountdown()"
+                      [relative]="nextRelative()"
+                      [lunar]="nextLunar()"
+                      [showLunar]="showLunar()"
+                    />
+                  }
+
+                  <z-card
+                    class="animate-in delay-200 duration-300 fill-mode-both fade-in slide-in-from-bottom-2 motion-reduce:animate-none"
+                  >
+                    <z-card-header class="grid-cols-[1fr_auto] items-center">
+                      <z-card-title zTitle="Lịch trình hôm nay" />
+                      <z-card-action>
+                        <span class="text-sm text-muted-foreground">{{ todayItems().length }} sự kiện</span>
+                      </z-card-action>
+                    </z-card-header>
+                    <z-card-content>
+                      <app-today-timeline [items]="todayItems()" [failedKeys]="failedKeys()" />
+                    </z-card-content>
+                  </z-card>
+                </div>
+
+                <app-today-sidebar
+                  class="animate-in delay-300 duration-300 fill-mode-both fade-in slide-in-from-bottom-2 motion-reduce:animate-none"
+                  [today]="today()"
+                  [monthLabel]="monthLabel()"
+                  [monthDays]="monthDays()"
+                  [upcoming]="upcoming()"
+                  [weekStartsOn]="weekStartsOn()"
+                />
               </div>
-              <div class="rounded-xl border border-border bg-card p-4">
-                <h2 class="mb-2 font-semibold">7 ngày tới</h2>
-                @for (o of upcoming(); track o.occurrenceKey) {
-                  <div class="flex items-center gap-3 border-t border-border py-2.5 first:border-0">
-                    <span class="w-12 rounded-md bg-muted px-1.5 py-0.5 text-center text-xs font-semibold">{{
-                      short(o.date)
-                    }}</span>
-                    <span class="flex-1 text-sm font-medium">{{ o.title }}</span>
-                  </div>
-                } @empty {
-                  <p class="py-3 text-sm text-muted-foreground">Chưa có sự kiện sắp tới.</p>
-                }
-              </div>
-            </section>
-          }
-        </div>
+            }
+          </div>
+        }
       </div>
     </div>
   `,
 })
 export class TodayPage {
   private readonly repo = inject(EventRepository);
+  private readonly settingsRepo = inject(SettingsRepository);
+  private readonly schedules = inject(NotificationScheduleRepository);
   private readonly clock = inject(Clock);
-  private readonly today = this.clock.todayIso();
-  protected readonly weekday = weekdayVi(this.today);
-  protected readonly date = formatVi(this.today);
-  protected readonly lunar = formatLunar(gregorianToLunar(this.today), true);
-  /** `null` = đang tải. liveQuery tự cập nhật khi dữ liệu thay đổi. */
+  private readonly toast = inject(ToastService);
+  private readonly reconciler = inject(ReminderReconciler);
+  private readonly destroyRef = inject(DestroyRef);
+  protected readonly permission = inject(NotificationPermissionService);
+
+  /** `now` cập nhật định kỳ để đếm ngược và sang ngày mới mà không cần tải lại. */
+  private readonly now = signal(this.clock.now());
+  protected readonly retrying = signal(false);
+
+  private readonly settings = toSignal(from(liveQuery(() => this.settingsRepo.get())), {
+    initialValue: DEFAULT_SETTINGS,
+  });
+  private readonly failedSchedules = toSignal(from(liveQuery(() => this.schedules.failed())), {
+    initialValue: [] as NotificationSchedule[],
+  });
+
+  protected readonly today = computed(() => epochMsToVnLocal(this.now()).date);
+  protected readonly weekStartsOn = computed(() => this.settings().weekStartsOn);
+  protected readonly showLunar = computed(() => this.settings().showLunarDate);
+  private readonly range = computed(() => todayQueryRange(this.today(), this.weekStartsOn()));
+
   protected readonly occurrences = toSignal<Occurrence[] | null>(
-    from(liveQuery(() => this.repo.occurrencesInRange(this.today, addDays(this.today, 7)))),
+    toObservable(this.range).pipe(switchMap((r) => from(liveQuery(() => this.repo.occurrencesInRange(r.from, r.to))))),
     { initialValue: null },
   );
-  protected readonly isEmpty = computed(() => this.occurrences()?.length === 0);
-  protected readonly todayItems = computed(() => (this.occurrences() ?? []).filter((o) => o.date === this.today));
-  protected readonly upcoming = computed(() => (this.occurrences() ?? []).filter((o) => o.date > this.today));
-  protected readonly next = computed(
-    () => this.todayItems().find((o) => !o.isAllDay && (o.startTime ?? '') >= this.clock.nowTime()) ?? null,
+
+  private readonly lunarToday = computed(() => gregorianToLunar(this.today()));
+  protected readonly lunar = computed(() => formatLunar(this.lunarToday()));
+  protected readonly canChi = computed(() => canChiYear(this.lunarToday().year));
+  protected readonly greeting = computed(() => greetingVi(Number(epochMsToVnLocal(this.now()).time.slice(0, 2))));
+
+  private readonly byDate = computed(() => {
+    const map = new Map<string, Occurrence[]>();
+    for (const o of this.occurrences() ?? []) map.set(o.date, [...(map.get(o.date) ?? []), o]);
+    return map;
+  });
+
+  protected readonly todayItems = computed(() => (this.occurrences() ?? []).filter((o) => o.date === this.today()));
+
+  private readonly sevenDayItems = computed(() => {
+    const today = this.today();
+    const end = addDays(today, 7);
+    return (this.occurrences() ?? []).filter((o) => o.date >= today && o.date <= end);
+  });
+
+  protected readonly isEmpty = computed(() => this.occurrences() !== null && this.sevenDayItems().length === 0);
+
+  protected readonly next = computed(() => pickNext(this.sevenDayItems(), this.now()));
+
+  protected readonly nextCountdown = computed(() => {
+    const n = this.next();
+    if (!n || n.isAllDay || !n.startTime) return '';
+    return formatCountdown(vnLocalToEpochMs(n.date, n.startTime) - this.now());
+  });
+
+  protected readonly nextRelative = computed(() => {
+    const n = this.next();
+    return n ? formatRelativeDay(n.date, this.today()) : '';
+  });
+
+  protected readonly nextLunar = computed(() => {
+    const n = this.next();
+    return n ? formatLunar(gregorianToLunar(n.date)) : '';
+  });
+
+  protected readonly weekDays = computed<TodayWeekDay[]>(() =>
+    buildWeek(this.today(), this.weekStartsOn()).map((d) => ({
+      ...d,
+      dotClass: this.dotFor(d),
+    })),
   );
-  protected short = formatViShort;
-  protected lunarOf = (o: Occurrence) => formatLunar(gregorianToLunar(o.date));
+
+  protected readonly monthDays = computed<TodayMonthDay[]>(() =>
+    buildMonthGrid(this.today(), this.weekStartsOn()).map((d) => ({
+      ...d,
+      dotClass: this.dotFor(d),
+    })),
+  );
+
+  protected readonly monthLabel = computed(() => {
+    const [year, month] = parseIso(this.today());
+    return `Tháng ${month}, ${year}`;
+  });
+
+  protected readonly upcoming = computed(() => {
+    const today = this.today();
+    const end = addDays(today, 7);
+    return (this.occurrences() ?? []).filter((o) => o.date > today && o.date <= end);
+  });
+
+  private readonly occurrenceKeys = computed(() => new Set((this.occurrences() ?? []).map((o) => o.occurrenceKey)));
+
+  private readonly failedForView = computed(() =>
+    this.failedSchedules().filter((s) => this.occurrenceKeys().has(s.occurrenceKey)),
+  );
+
+  protected readonly failureCount = computed(() => this.failedForView().length);
+  protected readonly failedKeys = computed(() => new Set(this.failedForView().map((s) => s.occurrenceKey)));
+
+  constructor() {
+    const timer = setInterval(() => this.now.set(this.clock.now()), 30_000);
+    this.destroyRef.onDestroy(() => clearInterval(timer));
+  }
+
+  protected async requestPermission(): Promise<void> {
+    const state = await this.permission.request();
+    if (state === 'denied') {
+      this.toast.show('Trình duyệt đã chặn thông báo. Hãy bật lại trong cài đặt trình duyệt.');
+    }
+  }
+
+  protected async retryReminders(): Promise<void> {
+    if (this.retrying()) return;
+    this.retrying.set(true);
+    try {
+      await this.reconciler.reconcile();
+      this.toast.show('Đã thử lại lịch nhắc');
+    } catch {
+      this.toast.show('Không thử lại được lịch nhắc. Vui lòng thử lại sau.');
+    } finally {
+      this.retrying.set(false);
+    }
+  }
+
+  private dotFor(day: { date: string }): string | null {
+    const first = this.byDate().get(day.date)?.[0];
+    return first ? eventCategoryStyle(first.category).dot : null;
+  }
 }

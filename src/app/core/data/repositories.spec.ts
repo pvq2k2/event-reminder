@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { ContactRepository } from './contact.repository';
 import { APP_DB, AppDb } from './db';
 import { EventRepository, EventValidationError, type NewEvent } from './event.repository';
+import { NotificationScheduleRepository } from './notification-schedule.repository';
 import { SettingsRepository } from './settings.repository';
 
 let db: AppDb;
@@ -104,5 +105,32 @@ describe('SettingsRepository', () => {
     await repo.update({ showLunarDate: false });
     expect((await repo.get()).showLunarDate).toBe(false);
     await expect(repo.update({ allDayReminderTime: '25:00' })).rejects.toThrow();
+  });
+});
+
+describe('NotificationScheduleRepository', () => {
+  it('chỉ trả các lời nhắc ở trạng thái failed', async () => {
+    await db.notificationSchedules.bulkAdd([
+      {
+        id: 'ok',
+        eventId: 'e1',
+        occurrenceKey: 'k1',
+        reminderId: 'r1',
+        scheduledAt: 1,
+        status: 'scheduled',
+        updatedAt: 1,
+      },
+      {
+        id: 'fail',
+        eventId: 'e1',
+        occurrenceKey: 'k2',
+        reminderId: 'r2',
+        scheduledAt: 2,
+        status: 'failed',
+        updatedAt: 2,
+      },
+    ]);
+    const failed = await TestBed.inject(NotificationScheduleRepository).failed();
+    expect(failed.map((s) => s.id)).toEqual(['fail']);
   });
 });

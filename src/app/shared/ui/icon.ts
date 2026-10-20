@@ -12,6 +12,8 @@ export const ICON_NAMES = [
   'x',
   'chevronLeft',
   'chevronRight',
+  'refresh',
+  'alertTriangle',
 ] as const;
 export type IconName = (typeof ICON_NAMES)[number];
 
@@ -76,6 +78,13 @@ export type IconName = (typeof ICON_NAMES)[number];
         }
         @case ('chevronRight') {
           <path d="M9 6l6 6-6 6" />
+        }
+        @case ('refresh') {
+          <path d="M20 11a8 8 0 10-2 6M20 5v6h-6" />
+        }
+        @case ('alertTriangle') {
+          <path d="M12 4l9 16H3z" />
+          <path d="M12 10v4M12 17v.5" />
         }
       }
     </svg>

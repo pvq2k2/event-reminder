@@ -31,6 +31,23 @@ describe('getOccurrencesInRange', () => {
     expect(getOccurrencesInRange(e, '2026-10-01', '2026-10-31')[0].occurrenceKey).toBe('e1:single');
   });
 
+  it('mang theo địa điểm và các mốc nhắc đang bật', () => {
+    const e = make(
+      { kind: 'none' },
+      {
+        startDate: '2026-10-09',
+        location: 'Nhà bác cả',
+        reminders: [
+          { id: 'r1', offsetMinutes: 30, enabled: true },
+          { id: 'r2', offsetMinutes: 1440, enabled: false },
+        ],
+      },
+    );
+    const [occ] = getOccurrencesInRange(e, '2026-10-01', '2026-10-31');
+    expect(occ.location).toBe('Nhà bác cả');
+    expect(occ.reminderOffsets).toEqual([30]);
+  });
+
   it('hằng ngày mỗi 3 ngày, kết thúc sau 3 lần', () => {
     const e = make({ kind: 'daily', interval: 3, end: { type: 'count', count: 3 } });
     expect(dates(e, '2026-01-01', '2026-12-31')).toEqual(['2026-01-01', '2026-01-04', '2026-01-07']);

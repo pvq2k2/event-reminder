@@ -1,261 +1,273 @@
 <!doctype html>
 <html lang="vi">
-
-<head>
-  <meta charset="utf-8" />
-  <title>Event Reminder</title>
-  <base href="/" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="icon" type="image/x-icon" href="favicon.ico" />
-  <link rel="manifest" href="manifest.webmanifest" />
-  <meta name="theme-color" content="#4f46e5" />
-  <style id="er-splash-style">
-    :root {
-      --background: #f5f6fa;
-      --foreground: #14172b;
-      --muted-foreground: #5b6078;
-      --primary: #4f46e5;
-      --primary-foreground: #ffffff;
-      --event-birthday: #fb7185;
-    }
-
-    .dark {
-      --background: #0f1117;
-      --foreground: #eceef8;
-      --muted-foreground: #9aa0b8;
-      --primary: #8b86ff;
-      --primary-foreground: #0f1117;
-      --event-birthday: #fb7185;
-    }
-
-    html.theme-light26 {
-      --background: #f0eee9;
-      --foreground: #10302f;
-      --muted-foreground: #4e6966;
-      --primary: #0f6b6c;
-      --primary-foreground: #ffffff;
-      --event-birthday: #ff7a59;
-    }
-
-    html.theme-light26.dark {
-      --background: #0b1a1a;
-      --foreground: #e6f2ef;
-      --muted-foreground: #8fa9a5;
-      --primary: #4fc3c0;
-      --primary-foreground: #06201f;
-      --event-birthday: #ff8f72;
-    }
-
-    html.theme-light27 {
-      --background: #eef3ff;
-      --foreground: #0b1b3f;
-      --muted-foreground: #4a5a80;
-      --primary: #2f66e6;
-      --primary-foreground: #ffffff;
-      --event-birthday: #ff6fb5;
-    }
-
-    html.theme-light27.dark {
-      --background: #0a1226;
-      --foreground: #e8eeff;
-      --muted-foreground: #8f9cc4;
-      --primary: #7aa2ff;
-      --primary-foreground: #08122b;
-      --event-birthday: #ff8cc6;
-    }
-
-    html {
-      background: var(--background);
-    }
-
-    body {
-      margin: 0;
-    }
-
-    #er-splash {
-      position: fixed;
-      inset: 0;
-      z-index: 50;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      background: var(--background);
-      color: var(--foreground);
-      font-family: 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif;
-      opacity: 1;
-      transition: opacity 0.3s ease;
-    }
-
-    #er-splash.er-splash--hide {
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    #er-splash .er-center {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 0 1rem;
-    }
-
-    #er-splash .er-logo {
-      filter: drop-shadow(0 18px 28px rgb(0 0 0 / 0.25));
-    }
-
-    #er-splash .er-logo svg {
-      width: 128px;
-      height: 128px;
-    }
-
-    #er-splash .er-title {
-      margin: 1.625rem 0 0;
-      font-size: 1.75rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    #er-splash .er-sub {
-      margin: 0.375rem 0 0;
-      font-size: 0.875rem;
-      color: var(--muted-foreground);
-    }
-
-    #er-splash .er-dots {
-      display: flex;
-      gap: 0.375rem;
-      margin-top: 1.875rem;
-    }
-
-    #er-splash .er-dots i {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--primary);
-      animation: er-dot-pulse 1.2s ease-in-out infinite;
-    }
-
-    #er-splash .er-dots i:nth-child(2) {
-      opacity: 0.5;
-      animation-delay: 0.15s;
-    }
-
-    #er-splash .er-dots i:nth-child(3) {
-      opacity: 0.25;
-      animation-delay: 0.3s;
-    }
-
-    @keyframes er-dot-pulse {
-
-      0%,
-      100% {
-        opacity: 0.25;
-        transform: scale(0.75);
+  <head>
+    <meta charset="utf-8" />
+    <title>Event Reminder</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <meta name="theme-color" content="#4f46e5" />
+    <style id="er-splash-style">
+      :root {
+        --background: #f5f6fa;
+        --foreground: #14172b;
+        --muted-foreground: #5b6078;
+        --primary: #4f46e5;
+        --primary-foreground: #ffffff;
+        --event-birthday: #fb7185;
       }
 
-      50% {
+      .dark {
+        --background: #0f1117;
+        --foreground: #eceef8;
+        --muted-foreground: #9aa0b8;
+        --primary: #8b86ff;
+        --primary-foreground: #0f1117;
+        --event-birthday: #fb7185;
+      }
+
+      html.theme-light26 {
+        --background: #f0eee9;
+        --foreground: #10302f;
+        --muted-foreground: #4e6966;
+        --primary: #0f6b6c;
+        --primary-foreground: #ffffff;
+        --event-birthday: #ff7a59;
+      }
+
+      html.theme-light26.dark {
+        --background: #0b1a1a;
+        --foreground: #e6f2ef;
+        --muted-foreground: #8fa9a5;
+        --primary: #4fc3c0;
+        --primary-foreground: #06201f;
+        --event-birthday: #ff8f72;
+      }
+
+      html.theme-light27 {
+        --background: #eef3ff;
+        --foreground: #0b1b3f;
+        --muted-foreground: #4a5a80;
+        --primary: #2f66e6;
+        --primary-foreground: #ffffff;
+        --event-birthday: #ff6fb5;
+      }
+
+      html.theme-light27.dark {
+        --background: #0a1226;
+        --foreground: #e8eeff;
+        --muted-foreground: #8f9cc4;
+        --primary: #7aa2ff;
+        --primary-foreground: #08122b;
+        --event-birthday: #ff8cc6;
+      }
+
+      html {
+        background: var(--background);
+      }
+
+      body {
+        margin: 0;
+      }
+
+      #er-splash {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: var(--background);
+        color: var(--foreground);
+        font-family: 'Be Vietnam Pro', ui-sans-serif, system-ui, sans-serif;
         opacity: 1;
-        transform: scale(1);
+        transition: opacity 0.3s ease;
       }
-    }
 
-    #er-splash .er-foot {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: calc(3.5rem + env(safe-area-inset-bottom));
-      padding: 0 1rem;
-      text-align: center;
-      font-size: 0.875rem;
-      color: var(--muted-foreground);
-    }
+      #er-splash.er-splash--hide {
+        opacity: 0;
+        pointer-events: none;
+      }
 
-    @media (min-width: 768px) {
+      #er-splash .er-center {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 0 1rem;
+      }
+
+      #er-splash .er-logo {
+        filter: drop-shadow(0 18px 28px rgb(0 0 0 / 0.25));
+      }
+
       #er-splash .er-logo svg {
-        width: 10rem;
-        height: 10rem;
+        width: 128px;
+        height: 128px;
       }
 
       #er-splash .er-title {
-        font-size: 2rem;
+        margin: 1.625rem 0 0;
+        font-size: 1.75rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
       }
-    }
 
-    @media (min-width: 1024px) {
-      #er-splash .er-logo svg {
-        width: 11rem;
-        height: 11rem;
+      #er-splash .er-sub {
+        margin: 0.375rem 0 0;
+        font-size: 0.875rem;
+        color: var(--muted-foreground);
       }
-    }
 
-    @media (prefers-reduced-motion: reduce) {
-      #er-splash {
-        transition: none;
+      #er-splash .er-dots {
+        display: flex;
+        gap: 0.375rem;
+        margin-top: 1.875rem;
       }
 
       #er-splash .er-dots i {
-        animation: none;
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--primary);
+        animation: er-dot-pulse 1.2s ease-in-out infinite;
       }
-    }
-  </style>
-  <script>
-    (function () {
-      var d = document.documentElement;
-      try {
-        var t = localStorage.getItem('er.theme');
-        if (t === 'light26' || t === 'light27') d.classList.add('theme-' + t);
-        var m = localStorage.getItem('er.mode') || 'system';
-        var dark =
-          m === 'dark' ||
-          (m === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-        if (dark) d.classList.add('dark');
-        var fs = { sm: '87.5%', md: '93.75%', default: '100%', lg: '112.5%', xl: '125%' };
-        var f = localStorage.getItem('er.font');
-        if (f && fs[f]) d.style.setProperty('--app-font-size', fs[f]);
-        var meta = document.querySelector('meta[name="theme-color"]');
-        var bg = getComputedStyle(d).getPropertyValue('--background').trim();
-        if (meta && bg) meta.setAttribute('content', bg);
-      } catch (e) {
-      }
-    })();
-  </script>
-</head>
 
-<body>
-  <div id="er-splash" role="status" aria-live="polite" aria-label="Đang tải Event Reminder">
-    <div class="er-center">
-      <div class="er-logo">
-        <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
-          <rect width="100" height="100" rx="22.5" fill="var(--background)" />
-          <rect x="21" y="26" width="58" height="53" rx="13" fill="var(--primary)" />
-          <rect x="21" y="26" width="58" height="15" rx="9" fill="var(--primary-foreground)" opacity=".18" />
-          <rect x="34" y="18" width="7" height="15" rx="3.5" fill="var(--primary)" stroke="var(--background)"
-            stroke-width="2.5" />
-          <rect x="59" y="18" width="7" height="15" rx="3.5" fill="var(--primary)" stroke="var(--background)"
-            stroke-width="2.5" />
-          <circle cx="46" cy="59" r="14" fill="var(--primary-foreground)" />
-          <circle cx="52" cy="55" r="12" fill="var(--primary)" />
-          <circle cx="64" cy="52" r="5" fill="var(--event-birthday)" />
-        </svg>
-      </div>
-      <div class="er-title">Event Reminder</div>
-      <div class="er-sub">Nhắc đúng ngày, nhớ đủ người thân</div>
-      <div class="er-dots" aria-hidden="true"><i></i><i></i><i></i></div>
-    </div>
-    <div class="er-foot">Dữ liệu chỉ lưu trên thiết bị của bạn</div>
-  </div>
-  <noscript>
-    <style>
-      #er-splash {
-        display: none;
+      #er-splash .er-dots i:nth-child(2) {
+        opacity: 0.5;
+        animation-delay: 0.15s;
+      }
+
+      #er-splash .er-dots i:nth-child(3) {
+        opacity: 0.25;
+        animation-delay: 0.3s;
+      }
+
+      @keyframes er-dot-pulse {
+        0%,
+        100% {
+          opacity: 0.25;
+          transform: scale(0.75);
+        }
+
+        50% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      #er-splash .er-foot {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: calc(3.5rem + env(safe-area-inset-bottom));
+        padding: 0 1rem;
+        text-align: center;
+        font-size: 0.875rem;
+        color: var(--muted-foreground);
+      }
+
+      @media (min-width: 768px) {
+        #er-splash .er-logo svg {
+          width: 10rem;
+          height: 10rem;
+        }
+
+        #er-splash .er-title {
+          font-size: 2rem;
+        }
+      }
+
+      @media (min-width: 1024px) {
+        #er-splash .er-logo svg {
+          width: 11rem;
+          height: 11rem;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        #er-splash {
+          transition: none;
+        }
+
+        #er-splash .er-dots i {
+          animation: none;
+        }
       }
     </style>
-  </noscript>
+    <script>
+      (function () {
+        var d = document.documentElement;
+        try {
+          var t = localStorage.getItem('er.theme');
+          if (t === 'light26' || t === 'light27') d.classList.add('theme-' + t);
+          var m = localStorage.getItem('er.mode') || 'system';
+          var dark =
+            m === 'dark' ||
+            (m === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+          if (dark) d.classList.add('dark');
+          var fs = { sm: '87.5%', md: '93.75%', default: '100%', lg: '112.5%', xl: '125%' };
+          var f = localStorage.getItem('er.font');
+          if (f && fs[f]) d.style.setProperty('--app-font-size', fs[f]);
+          var meta = document.querySelector('meta[name="theme-color"]');
+          var bg = getComputedStyle(d).getPropertyValue('--background').trim();
+          if (meta && bg) meta.setAttribute('content', bg);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
 
-  <app-root></app-root>
-  <noscript>Please enable JavaScript to continue using this application.</noscript>
-</body>
+  <body>
+    <div id="er-splash" role="status" aria-live="polite" aria-label="Đang tải Event Reminder">
+      <div class="er-center">
+        <div class="er-logo">
+          <svg viewBox="0 0 100 100" fill="none" aria-hidden="true">
+            <rect width="100" height="100" rx="22.5" fill="var(--background)" />
+            <rect x="21" y="26" width="58" height="53" rx="13" fill="var(--primary)" />
+            <rect x="21" y="26" width="58" height="15" rx="9" fill="var(--primary-foreground)" opacity=".18" />
+            <rect
+              x="34"
+              y="18"
+              width="7"
+              height="15"
+              rx="3.5"
+              fill="var(--primary)"
+              stroke="var(--background)"
+              stroke-width="2.5"
+            />
+            <rect
+              x="59"
+              y="18"
+              width="7"
+              height="15"
+              rx="3.5"
+              fill="var(--primary)"
+              stroke="var(--background)"
+              stroke-width="2.5"
+            />
+            <circle cx="46" cy="59" r="14" fill="var(--primary-foreground)" />
+            <circle cx="52" cy="55" r="12" fill="var(--primary)" />
+            <circle cx="64" cy="52" r="5" fill="var(--event-birthday)" />
+          </svg>
+        </div>
+        <div class="er-title">Event Reminder</div>
+        <div class="er-sub">Nhắc đúng ngày, nhớ đủ người thân</div>
+        <div class="er-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+      </div>
+      <div class="er-foot">Dữ liệu chỉ lưu trên thiết bị của bạn</div>
+    </div>
+    <noscript>
+      <style>
+        #er-splash {
+          display: none;
+        }
+      </style>
+    </noscript>
 
+    <app-root></app-root>
+    <noscript>Please enable JavaScript to continue using this application.</noscript>
+  </body>
 </html>

@@ -13,6 +13,7 @@ const occ = (over: Partial<Occurrence> = {}): Occurrence => ({
   isAllDay: false,
   title: 'Giỗ',
   category: 'memorial',
+  reminderOffsets: [],
   ...over,
 });
 const opts = { allDayReminderTime: '09:00' };

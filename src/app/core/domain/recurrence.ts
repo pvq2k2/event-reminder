@@ -87,6 +87,8 @@ function toOccurrence(event: AppEvent, c: Candidate, durationDays: number): Occu
     isAllDay: event.isAllDay,
     title: event.title,
     category: event.category,
+    location: event.location,
+    reminderOffsets: event.reminders.filter((r) => r.enabled).map((r) => r.offsetMinutes),
   };
 }
 

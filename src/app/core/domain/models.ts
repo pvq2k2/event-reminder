@@ -76,6 +76,9 @@ export interface Occurrence {
   isAllDay: boolean;
   title: string;
   category: EventCategory;
+  location?: string;
+  /** Các mốc nhắc đang bật của sự kiện, tính bằng phút trước giờ diễn ra. */
+  reminderOffsets: number[];
 }
 
 export interface Contact {
