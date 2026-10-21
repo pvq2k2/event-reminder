@@ -1,20 +1,19 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { liveQuery } from 'dexie';
-import { from, switchMap } from 'rxjs';
 import { Clock } from '@core/data/clock';
 import { EventRepository } from '@core/data/event.repository';
 import { addDays, daysInMonth, formatIso, parseIso, startOfWeekMonday } from '@core/domain/date';
 import { gregorianToLunar } from '@core/domain/lunar';
-import type { Occurrence } from '@core/domain/models';
-import { cn } from '@shared/utils/cn';
-import { AppIcon } from '@shared/ui/icon';
-import { EventBadge } from '@shared/ui/event-badge';
-import { formatVi, weekdayVi } from '@shared/utils/format';
+import type { EventCategory, Occurrence } from '@core/domain/models';
+import { ZardBadgeComponent } from '@shared/components/badge';
+import { AppIconComponent } from '@shared/ui';
+import { eventCategoryStyle, formatVi, mergeClasses, weekdayVi } from '@shared/utils';
+import { liveQuery } from 'dexie';
+import { from, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-calendar-page',
-  imports: [AppIcon, EventBadge],
+  imports: [AppIconComponent, ZardBadgeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   // Host phải block + cao full để khung header-scroll bên trong tính đúng.
   host: { class: 'block h-full min-h-0' },
@@ -93,7 +92,7 @@ import { formatVi, weekdayVi } from '@shared/utils/format';
                   <b class="block text-sm">{{ o.title }}</b
                   ><span class="text-xs text-muted-foreground">{{ o.isAllDay ? 'Cả ngày' : o.startTime }}</span>
                 </div>
-                <app-event-badge [category]="o.category" />
+                <z-badge [class]="badgeClass(o.category)">{{ categoryLabel(o.category) }}</z-badge>
               </div>
             } @empty {
               <p class="mt-3 text-sm text-muted-foreground">Không có sự kiện trong ngày này.</p>
@@ -112,6 +111,8 @@ export class CalendarPage {
   protected readonly view = signal((([y, m]) => ({ y, m }))(parseIso(this.clock.todayIso())));
   protected readonly weekday = weekdayVi;
   protected readonly full = formatVi;
+  protected readonly categoryLabel = (category: EventCategory): string => eventCategoryStyle(category).label;
+  protected readonly badgeClass = (category: EventCategory): string => eventCategoryStyle(category).badge;
 
   protected readonly cells = computed(() => {
     const { y, m } = this.view();
@@ -141,7 +142,7 @@ export class CalendarPage {
   protected readonly selectedItems = computed(() => this.byDate().get(this.selected()) ?? []);
 
   protected cellClass(c: { date: string; inMonth: boolean }): string {
-    return cn(
+    return mergeClasses(
       'min-h-16 border-t border-border p-1.5 text-left align-top transition-colors hover:bg-accent md:min-h-24',
       !c.inMonth && 'opacity-40',
       c.date === this.selected() && 'bg-accent ring-1 ring-primary ring-inset',

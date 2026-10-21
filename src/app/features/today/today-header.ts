@@ -3,12 +3,12 @@ import { RouterLink } from '@angular/router';
 import type { ISODate } from '@core/domain/date';
 import { parseIso } from '@core/domain/date';
 import { ZardButtonComponent } from '@shared/components/button';
-import { AppIcon } from '@shared/ui/icon';
-import { formatVi, weekdayVi } from '@shared/utils/format';
+import { AppIconComponent } from '@shared/ui';
+import { formatVi, weekdayVi } from '@shared/utils';
 
 @Component({
   selector: 'app-today-header',
-  imports: [RouterLink, ZardButtonComponent, AppIcon],
+  imports: [AppIconComponent, RouterLink, ZardButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block shrink-0' },
   template: `

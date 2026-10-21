@@ -1,17 +1,17 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { Occurrence } from '@core/domain/models';
-import { AppIcon } from '@shared/ui/icon';
+import { AppIconComponent } from '@shared/ui';
 
 @Component({
   selector: 'app-today-next-card',
-  imports: [RouterLink, AppIcon],
+  imports: [AppIconComponent, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   template: `
     <a
       [routerLink]="['/events', next().eventId]"
-      class="group block rounded-xl bg-primary p-5 text-primary-foreground transition-[translate,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 motion-reduce:transition-none motion-reduce:hover:[translate:none]"
+      class="group block rounded-xl bg-primary p-5 text-primary-foreground transition-[translate,box-shadow] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0 motion-reduce:transition-none motion-reduce:hover:translate-none"
       [attr.aria-label]="'Xem chi tiết ' + next().title"
     >
       <div class="flex items-center justify-between gap-3">
@@ -44,7 +44,7 @@ import { AppIcon } from '@shared/ui/icon';
         <app-icon
           name="chevronRight"
           [size]="14"
-          class="transition-[translate] duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:[translate:none]"
+          class="transition-[translate] duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-none"
         />
       </span>
     </a>

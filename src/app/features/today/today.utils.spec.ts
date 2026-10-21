@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest';
-import type { Occurrence } from '@core/domain/models';
 import { vnLocalToEpochMs } from '@core/domain/date';
+import type { Occurrence } from '@core/domain/models';
+import { describe, expect, it } from 'vitest';
+
 import { buildMonthGrid, buildWeek, pickNext, todayQueryRange } from './today.utils';
 
 const occ = (over: Partial<Occurrence> = {}): Occurrence => ({

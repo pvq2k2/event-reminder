@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { ZardCardImports } from '@shared/components/card';
-import { cn } from '@shared/utils/cn';
+import { mergeClasses } from '@shared/utils';
 
 export interface TodayWeekDay {
   date: string;
@@ -25,7 +25,7 @@ export interface TodayWeekDay {
                 <span class="text-xs text-muted-foreground">{{ d.label }}</span>
                 <span
                   [class]="
-                    cn(
+                    mergeClasses(
                       'grid size-9 place-items-center rounded-md text-sm font-semibold',
                       d.isToday && 'bg-primary text-primary-foreground'
                     )
@@ -34,7 +34,10 @@ export interface TodayWeekDay {
                 >
                   {{ d.day }}
                 </span>
-                <span [class]="cn('size-1.5 rounded-full', d.dotClass ?? 'bg-transparent')" aria-hidden="true"></span>
+                <span
+                  [class]="mergeClasses('size-1.5 rounded-full', d.dotClass ?? 'bg-transparent')"
+                  aria-hidden="true"
+                ></span>
               </li>
             }
           </ol>
@@ -45,5 +48,5 @@ export interface TodayWeekDay {
 })
 export class TodayWeekStrip {
   readonly days = input.required<TodayWeekDay[]>();
-  protected readonly cn = cn;
+  protected readonly mergeClasses = mergeClasses;
 }

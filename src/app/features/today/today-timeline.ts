@@ -2,14 +2,12 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { EventCategory, Occurrence } from '@core/domain/models';
 import { ZardBadgeComponent } from '@shared/components/badge';
-import { EventBadge } from '@shared/ui/event-badge';
-import { eventCategoryStyle } from '@shared/ui/event-category';
-import { AppIcon } from '@shared/ui/icon';
-import { cn } from '@shared/utils/cn';
+import { AppIconComponent } from '@shared/ui';
+import { eventCategoryStyle, mergeClasses } from '@shared/utils';
 
 @Component({
   selector: 'app-today-timeline',
-  imports: [RouterLink, AppIcon, EventBadge, ZardBadgeComponent],
+  imports: [AppIconComponent, RouterLink, ZardBadgeComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   template: `
@@ -23,7 +21,7 @@ import { cn } from '@shared/utils/cn';
             {{ o.isAllDay ? 'Cả ngày' : o.startTime }}
           </span>
           <span class="relative flex w-3 shrink-0 justify-center" aria-hidden="true">
-            <span [class]="cn('mt-3.5 size-2.5 rounded-full', dot(o.category))"></span>
+            <span [class]="mergeClasses('mt-3.5 size-2.5 rounded-full', dot(o.category))"></span>
             @if (!last) {
               <span class="absolute top-6 bottom-0 w-px bg-border"></span>
             }
@@ -35,7 +33,7 @@ import { cn } from '@shared/utils/cn';
           >
             <span class="flex flex-wrap items-center justify-between gap-2">
               <b class="min-w-0">{{ o.title }}</b>
-              <app-event-badge [category]="o.category" />
+              <z-badge [class]="badgeClass(o.category)">{{ categoryLabel(o.category) }}</z-badge>
             </span>
             <span class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
               @if (o.location) {
@@ -69,11 +67,13 @@ export class TodayTimeline {
   readonly items = input.required<Occurrence[]>();
   readonly failedKeys = input<ReadonlySet<string>>(new Set());
 
-  protected readonly cn = cn;
+  protected readonly mergeClasses = mergeClasses;
   protected readonly dot = (category: EventCategory): string => eventCategoryStyle(category).dot;
+  protected readonly categoryLabel = (category: EventCategory): string => eventCategoryStyle(category).label;
+  protected readonly badgeClass = (category: EventCategory): string => eventCategoryStyle(category).badge;
 
   protected rowClass(category: EventCategory): string {
-    return cn(
+    return mergeClasses(
       'mb-3 flex-1 rounded-xl border border-transparent px-3 py-3 transition-[translate,background-color] duration-200 hover:translate-x-0.5 hover:bg-muted motion-reduce:transition-none motion-reduce:hover:[translate:none]',
       eventCategoryStyle(category).soft,
     );

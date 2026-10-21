@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
-import { liveQuery } from 'dexie';
-import { from, switchMap } from 'rxjs';
 import { Clock } from '@core/data/clock';
 import { EventRepository } from '@core/data/event.repository';
 import { NotificationScheduleRepository } from '@core/data/notification-schedule.repository';
@@ -10,36 +8,37 @@ import { DEFAULT_SETTINGS, SettingsRepository } from '@core/data/settings.reposi
 import { addDays, epochMsToVnLocal, parseIso, vnLocalToEpochMs } from '@core/domain/date';
 import { canChiYear, formatLunar, gregorianToLunar } from '@core/domain/lunar';
 import type { NotificationSchedule, Occurrence } from '@core/domain/models';
-import { ReminderReconciler } from '@core/notifications/reminder-reconciler';
 import { NotificationPermissionService } from '@core/notifications/notification-permission.service';
+import { ReminderReconciler } from '@core/notifications/reminder-reconciler';
 import { ZardAlertComponent } from '@shared/components/alert';
 import { ZardButtonComponent } from '@shared/components/button';
 import { ZardCardImports } from '@shared/components/card';
 import { ZardSonnerService } from '@shared/components/sonner/sonner.service';
-import { EmptyState } from '@shared/ui/empty-state';
-import { eventCategoryStyle } from '@shared/ui/event-category';
-import { AppIcon } from '@shared/ui/icon';
-import { formatCountdown, formatRelativeDay, greetingVi } from '@shared/utils/format';
+import { AppIconComponent, EmptyStateComponent } from '@shared/ui';
+import { eventCategoryStyle, formatCountdown, formatRelativeDay, greetingVi } from '@shared/utils';
+import { liveQuery } from 'dexie';
+import { from, switchMap } from 'rxjs';
+
+import { buildMonthGrid, buildWeek, pickNext, todayQueryRange } from './today.utils';
 import { TodayHeader } from './today-header';
 import { TodayNextCard } from './today-next-card';
-import { TodaySidebar, type TodayMonthDay } from './today-sidebar';
+import { type TodayMonthDay, TodaySidebar } from './today-sidebar';
 import { TodaySkeleton } from './today-skeleton';
 import { TodayTimeline } from './today-timeline';
-import { buildMonthGrid, buildWeek, pickNext, todayQueryRange } from './today.utils';
-import { TodayWeekStrip, type TodayWeekDay } from './today-week-strip';
+import { type TodayWeekDay, TodayWeekStrip } from './today-week-strip';
 
 @Component({
   selector: 'app-today-page',
   imports: [
+    AppIconComponent,
+    EmptyStateComponent,
     RouterLink,
-    AppIcon,
     TodayHeader,
-    TodayWeekStrip,
     TodayNextCard,
-    TodayTimeline,
     TodaySidebar,
     TodaySkeleton,
-    EmptyState,
+    TodayTimeline,
+    TodayWeekStrip,
     ZardAlertComponent,
     ZardButtonComponent,
     ...ZardCardImports,

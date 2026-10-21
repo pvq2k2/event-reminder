@@ -2,10 +2,9 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { RouterLink } from '@angular/router';
 import type { EventCategory, Occurrence } from '@core/domain/models';
 import { ZardCardImports } from '@shared/components/card';
-import { eventCategoryStyle } from '@shared/ui/event-category';
-import { AppIcon } from '@shared/ui/icon';
-import { cn } from '@shared/utils/cn';
-import { formatRelativeDay, formatViShort } from '@shared/utils/format';
+import { AppIconComponent } from '@shared/ui';
+import { eventCategoryStyle, formatRelativeDay, formatViShort, mergeClasses } from '@shared/utils';
+
 import type { MonthDay } from './today.utils';
 
 export interface TodayMonthDay extends MonthDay {
@@ -14,7 +13,7 @@ export interface TodayMonthDay extends MonthDay {
 
 @Component({
   selector: 'app-today-sidebar',
-  imports: [RouterLink, AppIcon, ...ZardCardImports],
+  imports: [AppIconComponent, RouterLink, ...ZardCardImports],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'hidden md:block' },
   template: `
@@ -28,7 +27,7 @@ export interface TodayMonthDay extends MonthDay {
               <app-icon
                 name="chevronRight"
                 [size]="14"
-                class="transition-[translate] duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:[translate:none]"
+                class="transition-[translate] duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-none"
               />
             </a>
           </z-card-action>
@@ -43,7 +42,7 @@ export interface TodayMonthDay extends MonthDay {
             @for (d of monthDays(); track d.date) {
               <span
                 [class]="
-                  cn(
+                  mergeClasses(
                     'relative flex h-8 flex-col items-center justify-center rounded-md text-xs',
                     !d.inMonth && 'opacity-40',
                     d.isToday && 'bg-primary font-bold text-primary-foreground'
@@ -53,7 +52,10 @@ export interface TodayMonthDay extends MonthDay {
               >
                 {{ d.day }}
                 @if (d.dotClass) {
-                  <span [class]="cn('absolute bottom-0.5 size-1 rounded-full', d.dotClass)" aria-hidden="true"></span>
+                  <span
+                    [class]="mergeClasses('absolute bottom-0.5 size-1 rounded-full', d.dotClass)"
+                    aria-hidden="true"
+                  ></span>
                 }
               </span>
             }
@@ -69,12 +71,12 @@ export interface TodayMonthDay extends MonthDay {
           @for (o of upcoming(); track o.occurrenceKey) {
             <a
               [routerLink]="['/events', o.eventId]"
-              class="flex items-center gap-3 rounded-md px-1 py-2 transition-[translate,background-color] duration-200 hover:translate-x-0.5 hover:bg-muted motion-reduce:transition-none motion-reduce:hover:[translate:none]"
+              class="flex items-center gap-3 rounded-md px-1 py-2 transition-[translate,background-color] duration-200 hover:translate-x-0.5 hover:bg-muted motion-reduce:transition-none motion-reduce:hover:translate-none"
               [attr.aria-label]="'Xem chi tiết ' + o.title"
             >
               <span
                 [class]="
-                  cn(
+                  mergeClasses(
                     'inline-flex w-12 shrink-0 justify-center rounded-md py-0.5 text-xs font-semibold',
                     badge(o.category)
                   )
@@ -103,7 +105,7 @@ export class TodaySidebar {
   protected readonly weekdays = computed(() =>
     this.weekStartsOn() === 1 ? ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'] : ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
   );
-  protected readonly cn = cn;
+  protected readonly mergeClasses = mergeClasses;
   protected readonly short = formatViShort;
   protected readonly relative = (iso: string): string => formatRelativeDay(iso, this.today());
   protected readonly badge = (category: EventCategory): string => eventCategoryStyle(category).badge;

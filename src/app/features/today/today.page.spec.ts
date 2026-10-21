@@ -1,7 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Clock } from '@core/data/clock';
 import { APP_DB, AppDb } from '@core/data/db';
 import { EventRepository, type NewEvent } from '@core/data/event.repository';
@@ -11,6 +10,8 @@ import {
   type PermissionState,
 } from '@core/notifications/notification-permission.service';
 import { ReminderReconciler } from '@core/notifications/reminder-reconciler';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { TodayPage } from './today.page';
 
 const NOW = vnLocalToEpochMs('2026-10-09', '08:00');
@@ -127,7 +128,7 @@ describe('TodayPage', () => {
     await configure('default');
     const el = await render();
     await waitForText(el, 'Chưa bật thông báo');
-    const button = Array.from(el.querySelectorAll('button')).find((b) => b.textContent?.includes('Bật thông báo'));
+    const button = Array.from(el.querySelectorAll('button')).find((b) => b.textContent.includes('Bật thông báo'));
     expect(button).toBeDefined();
     button?.click();
     expect(permissionRequest).toHaveBeenCalled();
@@ -151,7 +152,7 @@ describe('TodayPage', () => {
     await waitForText(el, 'Không đặt được 1 lời nhắc');
     expect(el.textContent).toContain('Chưa có nhắc');
 
-    const retry = Array.from(el.querySelectorAll('button')).find((b) => b.textContent?.includes('Thử lại'));
+    const retry = Array.from(el.querySelectorAll('button')).find((b) => b.textContent.includes('Thử lại'));
     retry?.click();
     await vi.waitFor(() => expect(reconcile).toHaveBeenCalled());
   });
