@@ -1,4 +1,5 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+
 import type { Contact, ContactGroup, Family, FamilyMember } from '../domain/models';
 import { APP_DB } from './db';
 
@@ -98,8 +99,11 @@ export class ContactRepository {
         .map((f) => ({
           ...f,
           members: members
-            .filter((m) => m.familyId === f.id && byId.has(m.contactId))
-            .map((m) => ({ ...m, contact: byId.get(m.contactId)! })),
+            .filter((m) => m.familyId === f.id)
+            .flatMap((m) => {
+              const contact = byId.get(m.contactId);
+              return contact ? [{ ...m, contact }] : [];
+            }),
         })),
     }));
   }

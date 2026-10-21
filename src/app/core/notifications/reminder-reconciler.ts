@@ -1,6 +1,7 @@
-import { Injectable, inject } from '@angular/core';
-import { APP_DB } from '../data/db';
+import { inject, Injectable } from '@angular/core';
+
 import { Clock } from '../data/clock';
+import { APP_DB } from '../data/db';
 import { EventRepository } from '../data/event.repository';
 import { SettingsRepository } from '../data/settings.repository';
 import { buildReminderPlans } from '../domain/reminders';

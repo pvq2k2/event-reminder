@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, isDevMode } from '@angular/
 import { DemoSeed } from '@core/data/seed';
 import { NotificationPermissionService } from '@core/notifications/notification-permission.service';
 import { type AppMode, FONT_SCALES, type FontScale, THEMES, ThemeService } from '@core/theme/theme.service';
-import { cn } from '@shared/utils/cn';
+import { mergeClasses } from '@shared/utils';
 
 const MODES: readonly { id: AppMode; label: string }[] = [
   { id: 'system', label: 'Tự động' },
@@ -56,7 +56,7 @@ const PERMISSION_TEXT = {
                   [attr.aria-checked]="theme.theme() === t.id"
                   (click)="theme.theme.set(t.id)"
                   [class]="
-                    cn(
+                    mergeClasses(
                       'h-11 rounded-md border px-3 text-sm font-medium md:h-9',
                       theme.theme() === t.id ? 'border-primary bg-accent text-accent-foreground' : 'border-input'
                     )
@@ -124,10 +124,10 @@ export class SettingsPage {
   protected readonly themes = THEMES;
   protected readonly scales = Object.entries(FONT_SCALES) as [FontScale, { label: string }][];
   protected readonly dev = isDevMode();
-  protected readonly cn = cn;
+  protected readonly mergeClasses = mergeClasses;
   protected permissionText = () => PERMISSION_TEXT[this.permission.state()];
   protected seg = (on: boolean) =>
-    cn(
+    mergeClasses(
       'h-10 rounded-md text-sm font-medium transition-colors md:h-8',
       on ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground',
     );

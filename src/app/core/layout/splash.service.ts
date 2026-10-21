@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { ApplicationRef, Injectable, inject } from '@angular/core';
+import { ApplicationRef, inject, Injectable } from '@angular/core';
 import { filter, firstValueFrom } from 'rxjs';
 
 /** Thời gian hiện tối thiểu để đủ thấy branding (ms). */
@@ -29,7 +29,7 @@ export class SplashService {
     const wait = Math.max(0, MIN_VISIBLE_MS - (performance.now() - this.startedAt));
     if (wait > 0) await new Promise((resolve) => setTimeout(resolve, wait));
 
-    const reduce = this.doc.defaultView?.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches ?? false;
+    const reduce = this.doc.defaultView?.matchMedia('(prefers-reduced-motion: reduce)').matches ?? false;
     el.classList.add('er-splash--hide');
     if (reduce) {
       el.remove();

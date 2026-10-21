@@ -7,9 +7,10 @@ import {
 } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { provideServiceWorker } from '@angular/service-worker';
+import { provideZard } from '@shared/core/provider/providezard';
+
 import { routes } from './app.routes';
 import { ReminderReconciler } from './core/notifications/reminder-reconciler';
-import { provideZard } from '@shared/core/provider/providezard';
 
 export const appConfig: ApplicationConfig = {
   providers: [

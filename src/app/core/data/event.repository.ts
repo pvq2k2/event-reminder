@@ -1,4 +1,5 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+
 import type { ISODate } from '../domain/date';
 import type { AppEvent, Occurrence } from '../domain/models';
 import { compareOccurrences, getOccurrencesInRange } from '../domain/recurrence';

@@ -1,11 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { filter, map } from 'rxjs';
-import { AppIcon, type IconName } from '@shared/ui/icon';
-import { AppLogo } from '@shared/ui/logo';
-import { ZardSonnerComponent } from '@shared/components/sonner';
 import { ThemeService } from '@core/theme/theme.service';
+import { ZardSonnerComponent } from '@shared/components/sonner';
+import { AppIconComponent, AppLogoComponent, type IconName } from '@shared/ui';
+import { filter, map } from 'rxjs';
 
 interface NavItem {
   path: string;
@@ -20,7 +19,7 @@ interface NavItem {
  */
 @Component({
   selector: 'app-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, AppIcon, AppLogo, ZardSonnerComponent],
+  imports: [AppIconComponent, AppLogoComponent, RouterLink, RouterLinkActive, RouterOutlet, ZardSonnerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex h-dvh overflow-hidden bg-background text-foreground">

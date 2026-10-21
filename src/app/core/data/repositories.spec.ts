@@ -1,5 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
+
 import { ContactRepository } from './contact.repository';
 import { APP_DB, AppDb } from './db';
 import { EventRepository, EventValidationError, type NewEvent } from './event.repository';

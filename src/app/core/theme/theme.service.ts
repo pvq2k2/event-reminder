@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { Injectable, effect, inject, signal } from '@angular/core';
+import { effect, inject, Injectable, signal } from '@angular/core';
 
 export type AppTheme = 'default' | 'light26' | 'light27';
 export type AppMode = 'light' | 'dark' | 'system';

@@ -1,5 +1,6 @@
 import { InjectionToken } from '@angular/core';
 import Dexie, { type Table } from 'dexie';
+
 import type { AppEvent, Contact, ContactGroup, Family, FamilyMember, NotificationSchedule } from '../domain/models';
 
 export interface SettingRow {
@@ -32,8 +33,8 @@ export class AppDb extends Dexie {
       notificationSchedules: 'id, eventId, scheduledAt, &[occurrenceKey+reminderId]',
       settings: 'key',
     });
-    this.on('populate', (tx) => {
-      tx.table('contactGroups').bulkAdd([
+    this.on('populate', async (tx) => {
+      await tx.table('contactGroups').bulkAdd([
         { id: 'group-paternal', name: 'Bên nội', kind: 'paternal', sortOrder: 0 },
         { id: 'group-maternal', name: 'Bên ngoại', kind: 'maternal', sortOrder: 1 },
       ] satisfies ContactGroup[]);

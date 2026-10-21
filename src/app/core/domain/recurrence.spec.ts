@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import type { AppEvent, RecurrenceRule } from './models';
 import { getOccurrencesInRange, nextOccurrence } from './recurrence';
 

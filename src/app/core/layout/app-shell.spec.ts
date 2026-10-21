@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
-import { AppShell } from './app-shell';
+
 import { routes } from '../../app.routes';
+import { AppShell } from './app-shell';
 
 describe('AppShell', () => {
   it('mọi route page đều nằm trong shell (có nav)', () => {

@@ -1,4 +1,5 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+
 import type { AppEvent } from '../domain/models';
 import { ReminderReconciler } from '../notifications/reminder-reconciler';
 import { EventRepository, type NewEvent } from './event.repository';

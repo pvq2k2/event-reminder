@@ -1,4 +1,5 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
+
 import type { ReminderPlan } from '../domain/reminders';
 import { NotificationPermissionService } from './notification-permission.service';
 import type { ReminderScheduler } from './reminder-scheduler';
@@ -51,7 +52,7 @@ export class InAppReminderScheduler implements ReminderScheduler {
   private async show(plan: ReminderPlan): Promise<void> {
     if (this.permission.state() === 'granted') {
       const options = { body: plan.body, tag: plan.id, data: { eventId: plan.eventId } };
-      const reg = await navigator.serviceWorker?.getRegistration();
+      const reg = await navigator.serviceWorker.getRegistration();
       if (reg) {
         await reg.showNotification(plan.title, options);
         return;

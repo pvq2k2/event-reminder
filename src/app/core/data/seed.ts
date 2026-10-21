@@ -1,7 +1,8 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+
 import { addDays } from '../domain/date';
-import { ContactRepository } from './contact.repository';
 import { Clock } from './clock';
+import { ContactRepository } from './contact.repository';
 import { EventService } from './event.service';
 
 /** Dữ liệu mẫu cho môi trường phát triển (nút trong Cài đặt, chỉ hiện khi isDevMode). */

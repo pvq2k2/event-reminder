@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+
 import { SplashService } from './core/layout/splash.service';
 import { ThemeService } from './core/theme/theme.service';
 

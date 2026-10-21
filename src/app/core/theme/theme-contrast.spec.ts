@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+
 import { describe, expect, it } from 'vitest';
 
 /** Đọc token thật từ src/styles.css và kiểm tra WCAG AA (4.5:1) cho 6 biến thể: 3 bộ màu × sáng/tối. */

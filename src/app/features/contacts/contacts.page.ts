@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { ContactRepository, type GroupNode } from '@core/data/contact.repository';
 import { liveQuery } from 'dexie';
 import { from } from 'rxjs';
-import { ContactRepository, type GroupNode } from '@core/data/contact.repository';
 
 /** Khung màn Danh bạ (Phase 6). Hiện đã đọc cây Bên nội/Bên ngoại → Gia đình → Thành viên từ IndexedDB. */
 @Component({

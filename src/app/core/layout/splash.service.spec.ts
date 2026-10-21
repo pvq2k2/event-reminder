@@ -1,6 +1,7 @@
 import { ApplicationRef } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+
 import { SplashService } from './splash.service';
 
 describe('SplashService', () => {
