@@ -49,8 +49,8 @@ ESLint chặn: domain import `@angular/*`, `dexie`, `rxjs`, hoặc tầng trên;
 | Đối tượng | Quy ước | Ví dụ |
 |---|---|---|
 | File | `kebab-case`, hậu tố theo vai trò | `today.page.ts`, `event.repository.ts`, `event.service.ts`, `lunar.spec.ts` |
-| Class | `PascalCase`, **không** thêm hậu tố `Component`, giữ hậu tố vai trò khi cần | `TodayPage`, `EventBadge`, `EventRepository`, `ThemeService` |
-| Selector | tiền tố `app-`, `kebab-case` | `app-event-badge` |
+| Class | `PascalCase`, **không** thêm hậu tố `Component`, giữ hậu tố vai trò khi cần | `TodayPage`, `CalendarPage`, `EventRepository`, `ThemeService` |
+| Selector | tiền tố `app-`, `kebab-case` | `app-today-page` |
 | Selector (ngoại lệ) | mã ZardUI copy-source trong `shared/components`, `shared/core` giữ tiền tố `zard-` của upstream; ESLint miễn trừ (xem `eslint.config.js`) | `zard-button` |
 | Hằng toàn cục | `UPPER_SNAKE_CASE` | `APP_DB`, `MAX_TIMEOUT` |
 | Hàm/biến | `camelCase`, động từ cho hàm | `getOccurrencesInRange`, `computeFireAt` |
@@ -83,8 +83,8 @@ ESLint chặn: domain import `@angular/*`, `dexie`, `rxjs`, hoặc tầng trên;
 - Bo góc: `rounded-md/lg/xl` (bám `--radius`). Không dùng `rounded-[13px]`.
 - Cỡ chữ: dùng thang Tailwind (`text-sm`, `text-xl`); đơn vị `rem`, **không `px` cho cỡ chữ**, để tôn trọng cỡ chữ người dùng chọn.
 
-### 6.2 `cn()` và component
-- Gộp class bằng `cn()` (`@shared/utils/cn`); class sau thắng class trước.
+### 6.2 `mergeClasses()` và component
+- Gộp class bằng `mergeClasses()` (`@shared/utils/merge-classes`); class sau thắng class trước.
 - Component dùng chung nhận biến thể qua `input()`; nếu nhiều biến thể dùng `class-variance-authority`.
 - **ZardUI:** thêm bằng `npx zard-cli add <tên>`, mã sinh ra **thuộc về dự án** (được sửa). Ghi vào PR khi sửa component sinh sẵn. Không bọc lại component Zard nếu chỉ để đổi vài class: dùng `class` truyền vào.
 - Ưu tiên dùng component ZardUI cho: button, input, select, switch, tabs, dialog, sheet, table, calendar, badge, avatar, alert, skeleton, dropdown, command. Không tự viết lại.
@@ -128,7 +128,7 @@ ESLint chặn: domain import `@angular/*`, `dexie`, `rxjs`, hoặc tầng trên;
 
 ## 8. Khả năng truy cập (a11y)
 - Mọi điều khiển có tên truy cập (`aria-label` nếu chỉ có icon); icon trang trí `aria-hidden`.
-- **Không dựa vào màu đơn thuần:** badge luôn có nhãn chữ (`EventBadge`).
+- **Không dựa vào màu đơn thuần:** badge luôn có nhãn chữ (`z-badge` + label).
 - Điều hướng bàn phím đầy đủ; focus nhìn thấy (`ring`); Dialog/Sheet giữ focus và đóng bằng `Esc`.
 - Nhóm lựa chọn dùng `role="radiogroup"/"radio"` + `aria-checked`.
 - Tôn trọng `prefers-reduced-motion`; không hoạt ảnh bắt buộc.

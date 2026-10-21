@@ -107,8 +107,8 @@ event-reminder-web/
 │       ├── features/             # mỗi feature là một route lazy
 │       │   ├── today/  calendar/  contacts/  settings/  events/
 │       └── shared/
-│           ├── ui/               # component dùng chung (icon, event-badge, sau này: ZardUI)
-│           └── utils/            # cn(), format
+│           ├── ui/               # component dùng chung (icon, logo, wheel-picker)
+│           └── utils/            # event-category, mergeClasses, format
 └── .github/workflows/ci.yml
 ```
 
