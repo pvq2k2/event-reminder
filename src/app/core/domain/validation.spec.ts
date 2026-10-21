@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { type EventDraft, validateEventDraft } from './validation';
 
 const ok: EventDraft = {
@@ -23,6 +24,20 @@ describe('validateEventDraft', () => {
     expect(
       validateEventDraft({ ...ok, rule: { kind: 'weekly', interval: 1, weekdays: [], end: { type: 'never' } } }).rule,
     ).toBeDefined());
+  it('ngày kết thúc lặp trước ngày bắt đầu', () =>
+    expect(
+      validateEventDraft({
+        ...ok,
+        rule: { kind: 'weekly', interval: 1, weekdays: [1], end: { type: 'until', date: '2026-10-08' } },
+      }).rule,
+    ).toBeDefined());
+  it('cho phép ngày kết thúc lặp bằng ngày bắt đầu', () =>
+    expect(
+      validateEventDraft({
+        ...ok,
+        rule: { kind: 'weekly', interval: 1, weekdays: [1], end: { type: 'until', date: '2026-10-09' } },
+      }),
+    ).toEqual({}));
   it('sự kiện cả ngày không cần giờ', () =>
     expect(validateEventDraft({ ...ok, isAllDay: true, startTime: null, endTime: null })).toEqual({}));
 });

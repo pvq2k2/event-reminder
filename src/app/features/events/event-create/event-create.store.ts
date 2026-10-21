@@ -1,8 +1,6 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { liveQuery } from 'dexie';
-import { from } from 'rxjs';
 import { Clock } from '@core/data/clock';
 import { ContactRepository } from '@core/data/contact.repository';
 import type { NewEvent } from '@core/data/event.repository';
@@ -12,9 +10,11 @@ import type { EventCategory, LeapMonthPolicy, MissingDayPolicy, RecurrenceRule }
 import { getOccurrencesInRange } from '@core/domain/recurrence';
 import { validateEventDraft } from '@core/domain/validation';
 import { inputVariants } from '@shared/components/input/input.variants';
-import type { WheelOption } from '@shared/ui/wheel-picker';
-import { formatVi, weekdayVi } from '@shared/utils/format';
-import { mergeClasses } from '@shared/utils/merge-classes';
+import type { WheelOption } from '@shared/ui/wheel-picker/wheel-picker.component';
+import { formatVi, mergeClasses, weekdayVi } from '@shared/utils';
+import { liveQuery } from 'dexie';
+import { from } from 'rxjs';
+
 import { QUICK_OFFSETS, type RepeatKind } from './event-create.types';
 
 /**
@@ -166,7 +166,7 @@ export class EventCreateStore {
         return 'tuần';
       case 'monthly':
         return 'tháng';
-      default:
+      case 'daily':
         return 'ngày';
     }
   }
@@ -200,7 +200,7 @@ export class EventCreateStore {
   titleError(): string | null {
     const c = this.form.controls.title;
     if (!c.touched && !c.dirty) return null;
-    if (c.hasError('required')) return 'Tiêu đề không được để trống';
+    if (c.hasError('required') || !c.value.trim()) return 'Tiêu đề không được để trống';
     if (c.hasError('maxlength')) return 'Tiêu đề tối đa 200 ký tự';
     return null;
   }
@@ -212,6 +212,29 @@ export class EventCreateStore {
     return /^([01]\d|2[0-3]):[0-5]\d$/.test(this.form.controls.startTime.value)
       ? null
       : 'Cần giờ bắt đầu cho sự kiện không cả ngày';
+  }
+  endTimeError(): string | null {
+    if (this.form.controls.isAllDay.value || !this.form.controls.endTime.value) return null;
+    try {
+      return validateEventDraft(this.draft()).endTime ?? null;
+    } catch {
+      return null;
+    }
+  }
+  validateStep(step: number): boolean {
+    const controls = this.form.controls;
+    if (step === 1) {
+      controls.title.markAsTouched();
+      return !!controls.title.value.trim() && !controls.title.hasError('maxlength');
+    }
+    if (step === 2) {
+      controls.startTime.markAsTouched();
+      controls.endTime.markAsTouched();
+      const lunarResolved = controls.calendarSystem.value !== 'lunar' || this.lunarResolved() !== null;
+      return lunarResolved && !this.dateError() && !this.timeError() && !this.endTimeError();
+    }
+    if (step === 3) return !this.ruleError();
+    return true;
   }
   ruleError(): string | null {
     try {
@@ -321,7 +344,7 @@ export class EventCreateStore {
     this.selectedOffsets.update((s) => (s.includes(o) ? s.filter((x) => x !== o) : [...s, o]));
   }
   addCustomOffset(): void {
-    const n = Math.round(Math.min(10080, Math.max(0, this.customOffset.value ?? 0)));
+    const n = Math.round(Math.min(10080, Math.max(0, this.customOffset.value)));
     this.selectedOffsets.update((s) => (s.includes(n) ? s : [...s, n]));
   }
   setRepeat(id: RepeatKind): void {
@@ -403,8 +426,8 @@ export class EventCreateStore {
       calendarSystem: v.calendarSystem,
       category: v.category,
       rule: d.rule,
-      reminders: (quick ? [30, 1440] : this.selectedOffsets()).map((offsetMinutes, i) => ({
-        id: crypto.randomUUID() || `r${i}`,
+      reminders: (quick ? [30, 1440] : this.selectedOffsets()).map((offsetMinutes) => ({
+        id: crypto.randomUUID(),
         offsetMinutes,
         enabled: true,
       })),

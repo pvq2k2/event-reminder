@@ -1,16 +1,24 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ZardButtonComponent } from '@shared/components/button';
+import { ZardFieldImports } from '@shared/components/field';
 import { ZardInputComponent } from '@shared/components/input';
 import { ZardSwitchComponent } from '@shared/components/switch';
-import { Field } from '@shared/ui/field';
-import { AppIcon } from '@shared/ui/icon';
+import { AppIconComponent } from '@shared/ui';
+
 import { EventCreateStore } from './event-create.store';
 
 /** Bước 4/4 — danh sách mốc nhắc, mốc tùy chọn, giờ nhắc cả ngày, xem lại. */
 @Component({
   selector: 'app-step-remind',
-  imports: [ReactiveFormsModule, Field, AppIcon, ZardButtonComponent, ZardInputComponent, ZardSwitchComponent],
+  imports: [
+    AppIconComponent,
+    ReactiveFormsModule,
+    ZardButtonComponent,
+    ZardInputComponent,
+    ZardSwitchComponent,
+    ...ZardFieldImports,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   template: `
@@ -45,15 +53,18 @@ import { EventCreateStore } from './event-create.store';
     @if (store.showCustom()) {
       <div class="mt-2 flex items-end gap-2">
         <div class="flex-1">
-          <app-field label="Số phút tùy chọn"
-            ><input
+          <div z-field>
+            <label z-field-label for="event-custom-offset">Số phút tùy chọn</label>
+            <input
               z-input
+              id="event-custom-offset"
               type="number"
               [formControl]="store.customOffset"
               min="0"
               max="10080"
               class="h-11 bg-card md:h-9"
-          /></app-field>
+            />
+          </div>
         </div>
         <button z-button zType="outline" zSize="lg" type="button" (click)="store.addCustomOffset()" class="h-11 md:h-9">
           Thêm
@@ -61,9 +72,16 @@ import { EventCreateStore } from './event-create.store';
       </div>
     }
     <div class="mt-3">
-      <app-field label="Giờ nhắc cho sự kiện cả ngày"
-        ><input z-input type="time" [formControl]="store.form.controls.allDayTime" class="h-11 bg-card md:h-9"
-      /></app-field>
+      <div z-field>
+        <label z-field-label for="event-all-day-time">Giờ nhắc cho sự kiện cả ngày</label>
+        <input
+          z-input
+          id="event-all-day-time"
+          type="time"
+          [formControl]="store.form.controls.allDayTime"
+          class="h-11 bg-card md:h-9"
+        />
+      </div>
     </div>
     <p class="mt-4 text-xs font-semibold tracking-wider text-muted-foreground">XEM LẠI</p>
     <div class="mt-2 rounded-xl border border-border bg-card p-4">

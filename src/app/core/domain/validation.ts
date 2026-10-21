@@ -43,5 +43,12 @@ export function validateEventDraft(d: EventDraft): ValidationErrors {
   }
   const re = ruleError(d.rule);
   if (re) errors.rule = re;
+  else if (
+    d.rule.kind !== 'none' &&
+    d.rule.end.type === 'until' &&
+    (!ISO.test(d.rule.end.date) || d.rule.end.date < d.startDate)
+  ) {
+    errors.rule = 'Ngày kết thúc lặp phải sau hoặc bằng ngày bắt đầu';
+  }
   return errors;
 }

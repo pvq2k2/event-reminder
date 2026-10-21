@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { EventValidationError, type NewEvent } from '@core/data/event.repository';
@@ -7,8 +8,9 @@ import { SettingsRepository } from '@core/data/settings.repository';
 import { ZardAlertComponent } from '@shared/components/alert';
 import { ZardButtonComponent } from '@shared/components/button';
 import { ZardSonnerService } from '@shared/components/sonner/sonner.service';
-import { AppIcon } from '@shared/ui/icon';
+import { AppIconComponent } from '@shared/ui';
 import { mergeClasses } from '@shared/utils/merge-classes';
+
 import { EventCreateStore } from './event-create.store';
 import { StepBasics } from './step-basics';
 import { StepRemind } from './step-remind';
@@ -23,15 +25,15 @@ import { StepWhen } from './step-when';
 @Component({
   selector: 'app-event-create-page',
   imports: [
+    AppIconComponent,
     ReactiveFormsModule,
     RouterLink,
-    ZardButtonComponent,
-    ZardAlertComponent,
-    AppIcon,
     StepBasics,
-    StepWhen,
-    StepRepeat,
     StepRemind,
+    StepRepeat,
+    StepWhen,
+    ZardAlertComponent,
+    ZardButtonComponent,
   ],
   providers: [EventCreateStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -125,6 +127,10 @@ export class EventCreatePage {
   /** Hướng chuyển bước: 1 = tiến (trượt từ phải), -1 = lùi (trượt từ trái). */
   private readonly dir = signal<1 | -1>(1);
 
+  constructor() {
+    this.store.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.saveError.set(null));
+  }
+
   /** Hoạt ảnh vào của nội dung bước; tôn trọng prefers-reduced-motion. */
   protected stepAnimCls(): string {
     return mergeClasses(
@@ -143,26 +149,19 @@ export class EventCreatePage {
     if (this.step() < 4) this.next();
   }
   protected next(): void {
-    const form = this.store.form.controls;
-    if (this.step() === 1 && !form.title.value.trim()) {
-      form.title.markAsTouched();
-      return;
-    }
-    if (this.step() === 2) {
-      if (form.calendarSystem.value === 'lunar' && this.store.lunarResolved() === null) return;
-      if (this.store.dateError() || this.store.timeError()) return;
-    }
+    if (!this.store.validateStep(this.step())) return;
     this.dir.set(1);
+    this.saveError.set(null);
     this.step.update((s) => Math.min(4, s + 1));
   }
   protected prev(): void {
     this.dir.set(-1);
+    this.saveError.set(null);
     this.step.update((s) => Math.max(1, s - 1));
   }
 
   protected async quickSave(): Promise<void> {
-    if (!this.store.form.controls.title.value.trim()) {
-      this.store.form.controls.title.markAsTouched();
+    if (!this.store.validateStep(1)) {
       this.dir.set(-1);
       this.step.set(1);
       return;
@@ -182,8 +181,9 @@ export class EventCreatePage {
       await this.events.create(input);
       try {
         const s = await this.settings.get();
-        if (input.isAllDay && this.store.form.controls.allDayTime.value !== s.allDayReminderTime) {
-          await this.settings.update({ allDayReminderTime: this.store.form.controls.allDayTime.value });
+        const allDayTime = this.store.form.controls.allDayTime;
+        if (input.isAllDay && allDayTime.value !== s.allDayReminderTime) {
+          await this.settings.update({ allDayReminderTime: allDayTime.value });
         }
       } catch {
         /* giữ allDayReminderTime cũ khi settings lỗi */
@@ -195,9 +195,12 @@ export class EventCreatePage {
         const keys = Object.keys(e.errors);
         this.saveError.set(Object.values(e.errors)[0] ?? 'Dữ liệu không hợp lệ');
         if (keys.includes('title')) {
+          this.store.form.controls.title.markAsTouched();
           this.dir.set(-1);
           this.step.set(1);
-        } else if (keys.some((k) => ['startDate', 'endTime'].includes(k))) {
+        } else if (keys.some((k) => ['startDate', 'startTime', 'endTime'].includes(k))) {
+          this.store.form.controls.startTime.markAsTouched();
+          this.store.form.controls.endTime.markAsTouched();
           this.step.set(2);
         } else if (keys.includes('rule')) {
           this.step.set(3);

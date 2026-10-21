@@ -1,39 +1,48 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ZardButtonComponent } from '@shared/components/button';
+import { ZardFieldImports } from '@shared/components/field';
 import { ZardInputComponent } from '@shared/components/input';
-import { Field } from '@shared/ui/field';
-import { AppIcon } from '@shared/ui/icon';
+import { AppIconComponent } from '@shared/ui';
+
 import { EventCreateStore } from './event-create.store';
 
 /** Bước 1/4 — tiêu đề, mô tả, loại sự kiện, người liên quan, địa điểm. */
 @Component({
   selector: 'app-step-basics',
-  imports: [ReactiveFormsModule, Field, AppIcon, ZardButtonComponent, ZardInputComponent],
+  imports: [AppIconComponent, ReactiveFormsModule, ZardButtonComponent, ZardInputComponent, ...ZardFieldImports],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   template: `
     <h1 class="text-2xl font-bold tracking-tight">Sự kiện gì vậy?</h1>
     <div class="mt-4">
-      <app-field label="Tiêu đề" [error]="store.titleError()">
+      <div z-field [attr.data-invalid]="store.titleError() ? true : null">
+        <label z-field-label for="event-title">Tiêu đề</label>
         <input
           z-input
+          id="event-title"
           [formControl]="store.form.controls.title"
+          [attr.aria-invalid]="store.titleError() ? true : null"
           placeholder="Giỗ ông nội"
           autocomplete="off"
           class="h-11 bg-card md:h-9"
         />
-      </app-field>
+        @if (store.titleError(); as error) {
+          <z-field-error>{{ error }}</z-field-error>
+        }
+      </div>
     </div>
     <div class="mt-4">
-      <app-field label="Mô tả (không bắt buộc)">
+      <div z-field>
+        <label z-field-label for="event-description">Mô tả (không bắt buộc)</label>
         <textarea
+          id="event-description"
           [formControl]="store.form.controls.description"
           rows="2"
           placeholder="Cả nhà về sớm phụ dọn cỗ…"
           [class]="store.textareaCls()"
         ></textarea>
-      </app-field>
+      </div>
     </div>
     <p class="mt-4 text-xs font-semibold tracking-wider text-muted-foreground">LOẠI SỰ KIỆN</p>
     <div class="mt-2 flex flex-wrap gap-2" role="radiogroup" aria-label="Loại sự kiện">
@@ -69,10 +78,12 @@ import { EventCreateStore } from './event-create.store';
       }
     </div>
     <div class="mt-4">
-      <app-field label="Địa điểm">
+      <div z-field>
+        <label z-field-label for="event-location">Địa điểm</label>
         <div class="relative">
           <input
             z-input
+            id="event-location"
             [formControl]="store.form.controls.location"
             placeholder="Nhà bác cả"
             class="h-11 bg-card pr-10 md:h-9"
@@ -83,7 +94,7 @@ import { EventCreateStore } from './event-create.store';
             <app-icon name="pin" [size]="18" />
           </span>
         </div>
-      </app-field>
+      </div>
     </div>
   `,
 })

@@ -2,18 +2,22 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ZardAlertComponent } from '@shared/components/alert';
 import { ZardButtonComponent } from '@shared/components/button';
+import { ZardFieldImports } from '@shared/components/field';
 import { ZardInputComponent } from '@shared/components/input';
-import { Field } from '@shared/ui/field';
+
 import { EventCreateStore } from './event-create.store';
 
 /** Bước 3/4 — kiểu lặp, chi tiết, tháng nhuận/thiếu ngày, kết thúc, xem trước. */
 @Component({
   selector: 'app-step-repeat',
-  imports: [ReactiveFormsModule, Field, ZardButtonComponent, ZardInputComponent, ZardAlertComponent],
+  imports: [ReactiveFormsModule, ZardAlertComponent, ZardButtonComponent, ZardInputComponent, ...ZardFieldImports],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   template: `
     <h1 class="text-2xl font-bold tracking-tight">Có lặp lại không?</h1>
+    @if (store.ruleError()) {
+      <z-alert zType="destructive" [zDescription]="store.ruleError() ?? ''" class="mt-3" />
+    }
     <div class="mt-3 grid gap-2" role="radiogroup" aria-label="Kiểu lặp">
       @for (r of store.repeats; track r.id) {
         <button
@@ -62,14 +66,17 @@ import { EventCreateStore } from './event-create.store';
       </div>
       <div class="mt-2 flex items-center gap-2">
         <div class="w-28">
-          <app-field label="Mỗi"
-            ><input
+          <div z-field>
+            <label z-field-label for="event-interval">Mỗi</label>
+            <input
               z-input
+              id="event-interval"
               type="number"
               [formControl]="store.form.controls.interval"
               min="1"
               class="h-11 bg-card md:h-9"
-          /></app-field>
+            />
+          </div>
         </div>
         <p class="pt-6 text-sm text-muted-foreground">{{ store.intervalUnit() }}</p>
       </div>
@@ -147,27 +154,31 @@ import { EventCreateStore } from './event-create.store';
       </div>
       @if (store.endType() === 'until') {
         <div class="mt-2">
-          <app-field label="Kết thúc vào ngày"
-            ><input
+          <div z-field>
+            <label z-field-label for="event-end-condition-date">Kết thúc vào ngày</label>
+            <input
               z-input
+              id="event-end-condition-date"
               type="date"
               [formControl]="store.form.controls.endConditionDate"
               class="h-11 bg-card md:h-9"
             />
-            /></app-field
-          >
+          </div>
         </div>
       }
       @if (store.endType() === 'count') {
         <div class="mt-2">
-          <app-field label="Sau N lần"
-            ><input
+          <div z-field>
+            <label z-field-label for="event-end-condition-count">Sau N lần</label>
+            <input
               z-input
+              id="event-end-condition-count"
               type="number"
               [formControl]="store.form.controls.endConditionCount"
               min="1"
               class="h-11 bg-card md:h-9"
-          /></app-field>
+            />
+          </div>
         </div>
       }
       <div class="mt-3 rounded-xl border border-border bg-card p-3">
@@ -178,9 +189,6 @@ import { EventCreateStore } from './event-create.store';
           <p class="mt-1 text-sm text-muted-foreground">Chưa có lần nào trong 5 năm tới với quy tắc này.</p>
         }
       </div>
-    }
-    @if (store.ruleError()) {
-      <z-alert zType="destructive" [zDescription]="store.ruleError() ?? ''" class="mt-2" />
     }
   `,
 })

@@ -1,16 +1,24 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ZardAlertComponent } from '@shared/components/alert';
+import { ZardFieldImports } from '@shared/components/field';
 import { ZardInputComponent } from '@shared/components/input';
 import { ZardSwitchComponent } from '@shared/components/switch';
-import { Field } from '@shared/ui/field';
-import { WheelPicker } from '@shared/ui/wheel-picker';
+import { WheelPickerComponent } from '@shared/ui';
+
 import { EventCreateStore } from './event-create.store';
 
 /** Bước 2/4 — chọn âm/dương lịch, ngày giờ, cả ngày. */
 @Component({
   selector: 'app-step-when',
-  imports: [ReactiveFormsModule, Field, WheelPicker, ZardSwitchComponent, ZardAlertComponent, ZardInputComponent],
+  imports: [
+    ReactiveFormsModule,
+    WheelPickerComponent,
+    ZardAlertComponent,
+    ZardInputComponent,
+    ZardSwitchComponent,
+    ...ZardFieldImports,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   template: `
@@ -134,12 +142,34 @@ import { EventCreateStore } from './event-create.store';
     </div>
     @if (!store.form.controls.isAllDay.value) {
       <div class="mt-2 grid grid-cols-2 gap-2">
-        <app-field label="Bắt đầu" [error]="store.timeError()"
-          ><input z-input type="time" [formControl]="store.form.controls.startTime" class="h-11 bg-card md:h-9"
-        /></app-field>
-        <app-field label="Kết thúc"
-          ><input z-input type="time" [formControl]="store.form.controls.endTime" class="h-11 bg-card md:h-9"
-        /></app-field>
+        <div z-field [attr.data-invalid]="store.timeError() ? true : null">
+          <label z-field-label for="event-start-time">Bắt đầu</label>
+          <input
+            z-input
+            id="event-start-time"
+            type="time"
+            [formControl]="store.form.controls.startTime"
+            [attr.aria-invalid]="store.timeError() ? true : null"
+            class="h-11 bg-card md:h-9"
+          />
+          @if (store.timeError(); as error) {
+            <z-field-error>{{ error }}</z-field-error>
+          }
+        </div>
+        <div z-field [attr.data-invalid]="store.endTimeError() ? true : null">
+          <label z-field-label for="event-end-time">Kết thúc</label>
+          <input
+            z-input
+            id="event-end-time"
+            type="time"
+            [formControl]="store.form.controls.endTime"
+            [attr.aria-invalid]="store.endTimeError() ? true : null"
+            class="h-11 bg-card md:h-9"
+          />
+          @if (store.endTimeError(); as error) {
+            <z-field-error>{{ error }}</z-field-error>
+          }
+        </div>
       </div>
     }
   `,
