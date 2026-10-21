@@ -73,7 +73,7 @@ const STEP_COOLDOWN_MS = 120;
     </div>
   `,
 })
-export class WheelPicker implements AfterViewInit, OnDestroy {
+export class WheelPickerComponent implements AfterViewInit, OnDestroy {
   readonly label = input.required<string>();
   readonly options = input.required<readonly WheelOption[]>();
   readonly value = model<string>('');

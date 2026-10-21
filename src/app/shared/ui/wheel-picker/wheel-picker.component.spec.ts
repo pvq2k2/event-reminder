@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { WheelPicker } from './wheel-picker';
+
+import { WheelPickerComponent } from './wheel-picker.component';
 
 @Component({
-  imports: [WheelPicker],
+  imports: [WheelPickerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <app-wheel-picker
@@ -22,7 +23,7 @@ class Host {
 }
 
 @Component({
-  imports: [WheelPicker],
+  imports: [WheelPickerComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: ` <app-wheel-picker bare label="Ngày" [options]="[{ value: '29', label: '29' }]" value="29" /> `,
 })
@@ -30,7 +31,7 @@ class BareHost {
   readonly picked = signal('29');
 }
 
-describe('WheelPicker', () => {
+describe('WheelPickerComponent', () => {
   it('hiển thị đủ lựa chọn, mục đang chọn có aria-selected', () => {
     const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();

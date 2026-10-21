@@ -7,7 +7,6 @@ import {
   type TemplateRef,
   ViewEncapsulation,
 } from '@angular/core';
-
 import type { ClassValue } from 'clsx';
 
 import { ZardStringTemplateOutletDirective } from '@/shared/core';

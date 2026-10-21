@@ -8,13 +8,13 @@ import {
   output,
   ViewEncapsulation,
 } from '@angular/core';
-
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown, lucideChevronLeft, lucideChevronRight } from '@ng-icons/lucide';
 
+import { ZardButtonComponent } from '@/shared/components/button/button.component';
+import type { ZardButtonTypeVariants } from '@/shared/components/button/button.variants';
 import { mergeClasses } from '@/shared/utils/merge-classes';
 
-import { ZardCalendarI18nService } from './calendar-i18n.service';
 import type { ZardCalendarCaptionLayout } from './calendar.types';
 import {
   calendarCaptionLabelVariants,
@@ -26,12 +26,11 @@ import {
   calendarNavSpacerVariants,
   calendarNavVariants,
 } from './calendar.variants';
-import { ZardButtonComponent } from '@/shared/components/button/button.component';
-import type { ZardButtonTypeVariants } from '@/shared/components/button/button.variants';
+import { ZardCalendarI18nService } from './calendar-i18n.service';
 
 @Component({
   selector: 'z-calendar-navigation',
-  imports: [ZardButtonComponent, NgIcon],
+  imports: [NgIcon, ZardButtonComponent],
   template: `
     <div [class]="navClasses()">
       @if (zShowPreviousButton()) {

@@ -40,6 +40,6 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
     </svg>
   `,
 })
-export class AppLogo {
+export class AppLogoComponent {
   readonly size = input(128);
 }

@@ -51,7 +51,7 @@ import { ZardButtonComponent } from '@shared/components/button';
     }
   `,
 })
-export class ConfirmDialog {
+export class ConfirmDialogComponent {
   readonly open = input(false);
   readonly title = input.required<string>();
   readonly description = input<string>('');

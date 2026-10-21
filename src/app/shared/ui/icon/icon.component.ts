@@ -90,7 +90,7 @@ export type IconName = (typeof ICON_NAMES)[number];
     </svg>
   `,
 })
-export class AppIcon {
+export class AppIconComponent {
   readonly name = input.required<IconName>();
   readonly size = input(20);
 }

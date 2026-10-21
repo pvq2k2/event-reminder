@@ -17,13 +17,11 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { outputFromObservable, outputToObservable } from '@angular/core/rxjs-interop';
-import { NG_VALUE_ACCESSOR, type ControlValueAccessor } from '@angular/forms';
-
+import { type ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import type { ClassValue } from 'clsx';
 import { filter, map } from 'rxjs';
 
-import { ZardCalendarGridComponent } from '@/shared/components/calendar/calendar-grid.component';
-import { ZardCalendarNavigationComponent } from '@/shared/components/calendar/calendar-navigation.component';
+import type { ZardButtonTypeVariants } from '@/shared/components/button/button.variants';
 import type {
   CalendarDayTemplateContext,
   CalendarMode,
@@ -42,15 +40,16 @@ import {
   calendarMonthVariants,
   calendarVariants,
 } from '@/shared/components/calendar/calendar.variants';
+import { ZardCalendarGridComponent } from '@/shared/components/calendar/calendar-grid.component';
+import { ZardCalendarNavigationComponent } from '@/shared/components/calendar/calendar-navigation.component';
 import { mergeClasses } from '@/shared/utils/merge-classes';
 import { noopFn } from '@/shared/utils/noop';
 
 import { ZardCalendarI18nService } from './calendar-i18n.service';
-import type { ZardButtonTypeVariants } from '@/shared/components/button/button.variants';
 
 @Component({
   selector: 'z-calendar, [z-calendar]',
-  imports: [ZardCalendarNavigationComponent, ZardCalendarGridComponent],
+  imports: [ZardCalendarGridComponent, ZardCalendarNavigationComponent],
   template: `
     <div [class]="monthsClasses()">
       @for (month of visibleMonths(); track month.key; let i = $index, last = $last) {

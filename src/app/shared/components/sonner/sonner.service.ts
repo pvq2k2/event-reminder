@@ -1,6 +1,5 @@
 import { Injectable, type Type } from '@angular/core';
-
-import { toast, type ExternalToast, type PromiseData, type PromiseT } from 'ngx-sonner';
+import { type ExternalToast, type PromiseData, type PromiseT, toast } from 'ngx-sonner';
 
 /**
  * Type-safe Angular wrapper around the underlying `ngx-sonner` toast API.

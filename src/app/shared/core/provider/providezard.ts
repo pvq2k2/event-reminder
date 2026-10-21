@@ -1,4 +1,4 @@
-import { makeEnvironmentProviders, type EnvironmentProviders } from '@angular/core';
+import { type EnvironmentProviders, makeEnvironmentProviders } from '@angular/core';
 import { EVENT_MANAGER_PLUGINS } from '@angular/platform-browser';
 
 import { ZardDebounceEventManagerPlugin } from './event-manager-plugins/zard-debounce-event-manager-plugin';

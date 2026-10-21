@@ -14,7 +14,6 @@ import {
   viewChild,
   ViewEncapsulation,
 } from '@angular/core';
-
 import { NgIcon } from '@ng-icons/core';
 import type { ClassValue } from 'clsx';
 
@@ -50,7 +49,7 @@ export class ZardTabComponent {
 
 @Component({
   selector: 'z-tab-group',
-  imports: [NgTemplateOutlet, NgIcon],
+  imports: [NgIcon, NgTemplateOutlet],
   template: `
     <nav
       [class]="navClasses()"

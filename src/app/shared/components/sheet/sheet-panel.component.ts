@@ -12,7 +12,6 @@ import {
   output,
   ViewEncapsulation,
 } from '@angular/core';
-
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideX } from '@ng-icons/lucide';
 import type { ClassValue } from 'clsx';
@@ -37,7 +36,7 @@ export type ZardSheetSize = NonNullable<ZardSheetVariants['zSize']>;
  */
 @Component({
   selector: 'z-sheet-panel',
-  imports: [ZardButtonComponent, NgIcon],
+  imports: [NgIcon, ZardButtonComponent],
   template: `
     @if (zClosable()) {
       <button

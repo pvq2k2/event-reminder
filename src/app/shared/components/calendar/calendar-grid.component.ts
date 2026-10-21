@@ -17,7 +17,6 @@ import {
 
 import { mergeClasses } from '@/shared/utils/merge-classes';
 
-import { ZardCalendarI18nService } from './calendar-i18n.service';
 import type { CalendarDay, CalendarDayTemplateContext } from './calendar.types';
 import { getDayAriaLabel, getDayId } from './calendar.utils';
 import {
@@ -28,6 +27,7 @@ import {
   calendarWeekdayVariants,
   calendarWeeksVariants,
 } from './calendar.variants';
+import { ZardCalendarI18nService } from './calendar-i18n.service';
 
 @Component({
   selector: 'z-calendar-grid',

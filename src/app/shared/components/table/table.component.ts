@@ -1,10 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, input, ViewEncapsulation } from '@angular/core';
-
 import type { ClassValue } from 'clsx';
 
 import {
-  type ZardTableSizeVariants,
-  type ZardTableTypeVariants,
   tableBodyVariants,
   tableCaptionVariants,
   tableCellVariants,
@@ -13,6 +10,8 @@ import {
   tableHeadVariants,
   tableRowVariants,
   tableVariants,
+  type ZardTableSizeVariants,
+  type ZardTableTypeVariants,
 } from '@/shared/components/table/table.variants';
 import { mergeClasses } from '@/shared/utils/merge-classes';
 

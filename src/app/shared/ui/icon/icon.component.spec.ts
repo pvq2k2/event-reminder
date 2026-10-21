@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { AppIcon, ICON_NAMES } from './icon';
+
+import { AppIconComponent, ICON_NAMES } from './icon.component';
 
 @Component({
-  imports: [AppIcon],
+  imports: [AppIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @for (n of names; track n) {
@@ -15,7 +16,7 @@ class Host {
   readonly names = ICON_NAMES;
 }
 
-describe('AppIcon', () => {
+describe('AppIconComponent', () => {
   it('hiển thị đủ svg cho mọi icon (hồi quy lỗi sanitizer lọc innerHTML)', () => {
     const fixture = TestBed.createComponent(Host);
     fixture.detectChanges();
@@ -28,7 +29,7 @@ describe('AppIcon', () => {
 
   it('áp dụng đúng kích thước được truyền vào', () => {
     TestBed.configureTestingModule({});
-    const fixture = TestBed.createComponent(AppIcon);
+    const fixture = TestBed.createComponent(AppIconComponent);
     fixture.componentRef.setInput('name', 'moon');
     fixture.componentRef.setInput('size', 16);
     fixture.detectChanges();

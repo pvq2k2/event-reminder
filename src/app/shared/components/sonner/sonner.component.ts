@@ -11,13 +11,11 @@ import {
   NgZone,
   ViewEncapsulation,
 } from '@angular/core';
-
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCircleCheck, lucideInfo, lucideLoader2, lucideOctagonX, lucideTriangleAlert } from '@ng-icons/lucide';
-import type { ClassValue } from 'clsx';
-import { NgxSonnerToaster, toastState, type ToasterProps } from 'ngx-sonner';
-
 import { mergeClasses } from '@shared/utils/merge-classes';
+import type { ClassValue } from 'clsx';
+import { NgxSonnerToaster, type ToasterProps, toastState } from 'ngx-sonner';
 
 import { sonnerVariants } from './sonner.variants';
 

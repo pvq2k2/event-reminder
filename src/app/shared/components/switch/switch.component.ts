@@ -10,7 +10,6 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { type ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-
 import type { ClassValue } from 'clsx';
 
 import { ZardIdDirective } from '@/shared/core';

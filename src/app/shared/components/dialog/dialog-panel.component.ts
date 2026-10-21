@@ -12,7 +12,6 @@ import {
   output,
   ViewEncapsulation,
 } from '@angular/core';
-
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideX } from '@ng-icons/lucide';
 import type { ClassValue } from 'clsx';
@@ -34,7 +33,7 @@ export const DIALOG_DURATION = 100;
  */
 @Component({
   selector: 'z-dialog-panel',
-  imports: [ZardButtonComponent, NgIcon],
+  imports: [NgIcon, ZardButtonComponent],
   template: `
     @if (zClosable()) {
       <button

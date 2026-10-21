@@ -8,15 +8,14 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import type { SafeUrl } from '@angular/platform-browser';
-
 import { NgIcon } from '@ng-icons/core';
 import type { ClassValue } from 'clsx';
 
 import { mergeClasses } from '@/shared/utils/merge-classes';
 
 import {
-  avatarVariants,
   avatarBadgeVariants,
+  avatarVariants,
   fallbackVariants,
   imageVariants,
   type ZardAvatarSizeVariants,

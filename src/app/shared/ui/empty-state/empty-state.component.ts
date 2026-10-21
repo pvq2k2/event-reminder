@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ZardButtonComponent } from '@shared/components/button';
-import { AppIcon, type IconName } from './icon';
+
+import { AppIconComponent, type IconName } from '../icon/icon.component';
 
 /** Trạng thái trống dùng chung: icon + tiêu đề + mô tả + hành động gợi ý. */
 @Component({
   selector: 'app-empty-state',
-  imports: [RouterLink, ZardButtonComponent, AppIcon],
+  imports: [AppIconComponent, RouterLink, ZardButtonComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'block' },
   template: `
@@ -30,7 +31,7 @@ import { AppIcon, type IconName } from './icon';
     </section>
   `,
 })
-export class EmptyState {
+export class EmptyStateComponent {
   readonly title = input.required<string>();
   readonly description = input<string>('');
   readonly actionLabel = input<string>('');

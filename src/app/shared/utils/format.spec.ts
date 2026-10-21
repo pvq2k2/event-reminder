@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { formatCountdown, formatRelativeDay, greetingVi, weekdayShortVi } from './format';
 
 describe('formatCountdown', () => {
