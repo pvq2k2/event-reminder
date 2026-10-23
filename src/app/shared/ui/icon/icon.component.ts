@@ -8,6 +8,8 @@ export const ICON_NAMES = [
   'plus',
   'bell',
   'moon',
+  'sun',
+  'search',
   'pin',
   'x',
   'chevronLeft',
@@ -65,6 +67,14 @@ export type IconName = (typeof ICON_NAMES)[number];
         }
         @case ('moon') {
           <path d="M20 14A8 8 0 019.5 4 8 8 0 1020 14z" />
+        }
+        @case ('sun') {
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5" />
+        }
+        @case ('search') {
+          <circle cx="11" cy="11" r="7" />
+          <path d="M20 20l-4-4" />
         }
         @case ('pin') {
           <path d="M12 21s7-6 7-11a7 7 0 10-14 0c0 5 7 11 7 11z" />

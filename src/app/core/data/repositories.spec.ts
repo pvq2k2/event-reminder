@@ -5,6 +5,7 @@ import { ContactRepository } from './contact.repository';
 import { APP_DB, AppDb } from './db';
 import { EventRepository, EventValidationError, type NewEvent } from './event.repository';
 import { NotificationScheduleRepository } from './notification-schedule.repository';
+import { SearchService } from './search.service';
 import { SettingsRepository } from './settings.repository';
 
 let db: AppDb;
@@ -96,6 +97,19 @@ describe('ContactRepository', () => {
     await repo.createContact({ displayName: 'Ông nội' });
     await repo.createContact({ displayName: 'Cô Lan' });
     expect((await repo.search('ong')).map((c) => c.displayName)).toEqual(['Ông nội']);
+  });
+});
+
+describe('SearchService', () => {
+  it('tìm sự kiện và liên hệ không phân biệt dấu', async () => {
+    await TestBed.inject(EventRepository).create(ev({ title: 'Giỗ ông nội' }));
+    await TestBed.inject(ContactRepository).createContact({ displayName: 'Ông nội' });
+
+    const results = await TestBed.inject(SearchService).search('ong');
+
+    expect(results.events.map((event) => event.title)).toContain('Giỗ ông nội');
+    expect(results.contacts.map((contact) => contact.displayName)).toContain('Ông nội');
+    expect(await TestBed.inject(SearchService).search('  ')).toEqual({ events: [], contacts: [] });
   });
 });
 

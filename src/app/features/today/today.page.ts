@@ -23,7 +23,6 @@ import { buildMonthGrid, buildWeek, pickNext, todayQueryRange } from './today.ut
 import { TodayHeader } from './today-header';
 import { TodayNextCard } from './today-next-card';
 import { type TodayMonthDay, TodaySidebar } from './today-sidebar';
-import { TodaySkeleton } from './today-skeleton';
 import { TodayTimeline } from './today-timeline';
 import { type TodayWeekDay, TodayWeekStrip } from './today-week-strip';
 
@@ -36,7 +35,6 @@ import { type TodayWeekDay, TodayWeekStrip } from './today-week-strip';
     TodayHeader,
     TodayNextCard,
     TodaySidebar,
-    TodaySkeleton,
     TodayTimeline,
     TodayWeekStrip,
     ZardAlertComponent,
@@ -58,9 +56,7 @@ import { type TodayWeekDay, TodayWeekStrip } from './today-week-strip';
       />
 
       <div class="scrollbar-thin min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 pb-2 md:p-6 md:pb-3">
-        @if (occurrences() === null) {
-          <app-today-skeleton />
-        } @else {
+        @if (occurrences() !== null) {
           <div class="flex flex-col gap-4">
             <app-today-week-strip
               class="animate-in duration-300 fill-mode-both fade-in slide-in-from-bottom-2 motion-reduce:animate-none"
@@ -116,30 +112,31 @@ import { type TodayWeekDay, TodayWeekStrip } from './today-week-strip';
                 [zAction]="retryTpl"
               />
             }
-
-            @if (isEmpty()) {
-              <app-empty-state
-                class="animate-in delay-100 duration-300 fill-mode-both fade-in slide-in-from-bottom-2 motion-reduce:animate-none"
-                icon="calendar"
-                title="Hôm nay thảnh thơi"
-                description="Chưa có sự kiện nào trong 7 ngày tới. Thêm ngày giỗ, sinh nhật hay lịch hẹn để được nhắc đúng lúc."
-                actionLabel="Thêm sự kiện đầu tiên"
-                actionLink="/events/new"
-              >
-                <div class="mt-2 flex flex-wrap justify-center gap-2">
-                  <span class="rounded-full bg-event-birthday/20 px-3 py-1 text-xs font-medium text-event-birthday-ink"
-                    >Sinh nhật</span
-                  >
-                  <span class="rounded-full bg-event-memorial/20 px-3 py-1 text-xs font-medium text-event-memorial-ink"
-                    >Ngày giỗ</span
-                  >
-                  <span class="rounded-full bg-event-work/15 px-3 py-1 text-xs font-medium text-event-work-ink"
-                    >Lịch hẹn</span
-                  >
-                </div>
-              </app-empty-state>
-            } @else {
-              <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+            <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
+              @if (isEmpty()) {
+                <app-empty-state
+                  class="animate-in delay-100 duration-300 fill-mode-both fade-in slide-in-from-bottom-2 motion-reduce:animate-none"
+                  icon="calendar"
+                  title="Hôm nay thảnh thơi"
+                  description="Chưa có sự kiện nào trong 7 ngày tới. Thêm ngày giỗ, sinh nhật hay lịch hẹn để được nhắc đúng lúc."
+                  actionLabel="Thêm sự kiện đầu tiên"
+                  actionLink="/events/new"
+                >
+                  <div class="mt-2 flex flex-wrap justify-center gap-2">
+                    <span
+                      class="rounded-full bg-event-birthday/20 px-3 py-1 text-xs font-medium text-event-birthday-ink"
+                      >Sinh nhật</span
+                    >
+                    <span
+                      class="rounded-full bg-event-memorial/20 px-3 py-1 text-xs font-medium text-event-memorial-ink"
+                      >Ngày giỗ</span
+                    >
+                    <span class="rounded-full bg-event-work/15 px-3 py-1 text-xs font-medium text-event-work-ink"
+                      >Lịch hẹn</span
+                    >
+                  </div>
+                </app-empty-state>
+              } @else {
                 <div class="flex min-w-0 flex-col gap-4">
                   @if (next(); as n) {
                     <app-today-next-card
@@ -166,17 +163,17 @@ import { type TodayWeekDay, TodayWeekStrip } from './today-week-strip';
                     </z-card-content>
                   </z-card>
                 </div>
+              }
 
-                <app-today-sidebar
-                  class="animate-in delay-300 duration-300 fill-mode-both fade-in slide-in-from-bottom-2 motion-reduce:animate-none"
-                  [today]="today()"
-                  [monthLabel]="monthLabel()"
-                  [monthDays]="monthDays()"
-                  [upcoming]="upcoming()"
-                  [weekStartsOn]="weekStartsOn()"
-                />
-              </div>
-            }
+              <app-today-sidebar
+                class="animate-in delay-300 duration-300 fill-mode-both fade-in slide-in-from-bottom-2 motion-reduce:animate-none"
+                [today]="today()"
+                [monthLabel]="monthLabel()"
+                [monthDays]="monthDays()"
+                [upcoming]="upcoming()"
+                [weekStartsOn]="weekStartsOn()"
+              />
+            </div>
           </div>
         }
       </div>

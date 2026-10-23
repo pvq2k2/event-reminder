@@ -76,10 +76,11 @@ async function waitForText(element: HTMLElement, text: string): Promise<void> {
 }
 
 describe('TodayPage', () => {
-  it('hiện skeleton khi dữ liệu còn đang tải', async () => {
+  it('không hiện skeleton khi dữ liệu còn đang tải', async () => {
     await configure();
     const el = await render();
-    expect(el.querySelector('[aria-busy="true"]')).not.toBeNull();
+    expect(el.querySelector('[aria-busy="true"]')).toBeNull();
+    expect(el.querySelector('app-today-header')).not.toBeNull();
   });
 
   it('hiện trạng thái trống khi không có sự kiện trong 7 ngày', async () => {
@@ -122,6 +123,9 @@ describe('TodayPage', () => {
     expect(el.textContent).toContain('7 ngày tới');
     expect(el.textContent).toContain('Sinh nhật bà ngoại');
     expect(el.querySelector(`a[href="/events/${meeting.id}"]`)).not.toBeNull();
+    const timelineLink = el.querySelector(`app-today-timeline a[href="/events/${meeting.id}"]`);
+    expect(timelineLink?.textContent).toContain('Công việc');
+    expect(timelineLink?.textContent).toContain('Nhắc trước 30 phút');
   });
 
   it('xin quyền thông báo từ banner', async () => {

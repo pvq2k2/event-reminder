@@ -1,5 +1,5 @@
 import { DOCUMENT } from '@angular/common';
-import { effect, inject, Injectable, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, signal } from '@angular/core';
 
 export type AppTheme = 'default' | 'light26' | 'light27';
 export type AppMode = 'light' | 'dark' | 'system';
@@ -17,6 +17,8 @@ export const FONT_SCALES: Record<FontScale, { label: string; percent: number }> 
   lg: { label: 'Lớn', percent: 112.5 },
   xl: { label: 'Rất lớn', percent: 125 },
 };
+
+const THEME_SWITCH_MS = 80;
 
 const read = <T extends string>(key: string, allowed: readonly T[], fallback: T): T => {
   try {
@@ -43,6 +45,8 @@ export class ThemeService {
   readonly fontScale = signal<FontScale>(read('er.font', Object.keys(FONT_SCALES) as FontScale[], 'default'));
   private readonly media = typeof matchMedia === 'function' ? matchMedia('(prefers-color-scheme: dark)') : null;
   private readonly systemDark = signal(this.media?.matches ?? false);
+  private themeSwitchTimer: ReturnType<typeof setTimeout> | undefined;
+  readonly isDark = computed(() => this.mode() === 'dark' || (this.mode() === 'system' && this.systemDark()));
 
   constructor() {
     this.media?.addEventListener('change', (e) => this.systemDark.set(e.matches));
@@ -50,11 +54,17 @@ export class ThemeService {
       const theme = this.theme(),
         mode = this.mode(),
         font = this.fontScale();
+      this.html.classList.add('theme-switching');
       this.html.classList.remove('theme-light26', 'theme-light27');
       if (theme !== 'default') this.html.classList.add(`theme-${theme}`);
       this.html.classList.toggle('dark', mode === 'dark' || (mode === 'system' && this.systemDark()));
       this.html.style.setProperty('--app-font-size', `${FONT_SCALES[font].percent}%`);
       this.syncThemeColor();
+      clearTimeout(this.themeSwitchTimer);
+      this.themeSwitchTimer = setTimeout(() => {
+        this.html.classList.remove('theme-switching');
+        this.themeSwitchTimer = undefined;
+      }, THEME_SWITCH_MS);
       try {
         localStorage.setItem('er.theme', theme);
         localStorage.setItem('er.mode', mode);

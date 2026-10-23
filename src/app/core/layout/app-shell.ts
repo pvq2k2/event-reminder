@@ -6,6 +6,8 @@ import { ZardSonnerComponent } from '@shared/components/sonner';
 import { AppIconComponent, AppLogoComponent, type IconName } from '@shared/ui';
 import { filter, map } from 'rxjs';
 
+import { AppTopbar } from './app-topbar';
+
 interface NavItem {
   path: string;
   label: string;
@@ -14,12 +16,20 @@ interface NavItem {
 
 /**
  * Khung responsive (mobile-first). Khóa theo viewport (`h-dvh`): main cố định,
- * từng page tự chia header cố định + vùng scroll + footer.
- *  - < md: thanh tab dưới đáy (ẩn ở trang tạo/sửa sự kiện)   - md: rail icon   - lg+: sidebar đầy đủ.
+ * từng page tự chia header cố định + vùng scroll + footer; desktop có topbar chung.
+ *  - < md: thanh tab dưới đáy (ẩn ở trang tạo/sửa sự kiện)   - md: rail icon   - lg+: sidebar đầy đủ + topbar.
  */
 @Component({
   selector: 'app-shell',
-  imports: [AppIconComponent, AppLogoComponent, RouterLink, RouterLinkActive, RouterOutlet, ZardSonnerComponent],
+  imports: [
+    AppIconComponent,
+    AppLogoComponent,
+    AppTopbar,
+    RouterLink,
+    RouterLinkActive,
+    RouterOutlet,
+    ZardSonnerComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex h-dvh overflow-hidden bg-background text-foreground">
@@ -44,10 +54,11 @@ interface NavItem {
       </aside>
 
       <main
-        class="min-h-0 min-w-0 flex-1 overflow-hidden md:pb-0"
+        class="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden md:pb-0 [&>router-outlet+*]:min-h-0 [&>router-outlet+*]:flex-1"
         [class.pb-[calc(4rem+env(safe-area-inset-bottom))]]="!hideMobileNav()"
       >
-        <router-outlet />
+        <app-topbar class="hidden md:block" />
+        <router-outlet class="hidden" />
       </main>
       @defer (on idle) {
         <z-sonner

@@ -334,9 +334,20 @@ html.theme-light27.dark {
   * {
     @apply border-border outline-ring/50;
   }
+
+  /* Đổi theme phải đổi màu đồng loạt; duration-* của animation vào trang cũng đặt
+       transition-duration nên nếu không chặn, card/panel sẽ trễ 150–300ms. */
+  html.theme-switching,
+  html.theme-switching *,
+  html.theme-switching *::before,
+  html.theme-switching *::after {
+    transition: none !important;
+  }
+
   html {
     font-size: var(--app-font-size, 100%);
   }
+
   body {
     @apply bg-background font-sans text-foreground antialiased;
   }

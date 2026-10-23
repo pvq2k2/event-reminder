@@ -82,7 +82,7 @@ const PERMISSION_TEXT = {
             </div>
           </section>
 
-          <section class="rounded-xl border border-border bg-card p-4">
+          <section id="notifications" class="scroll-mt-4 rounded-xl border border-border bg-card p-4">
             <h2 class="font-semibold">Thông báo</h2>
             <p class="mt-1 text-sm text-muted-foreground">{{ permissionText() }}</p>
             <p class="mt-1 text-xs text-muted-foreground">

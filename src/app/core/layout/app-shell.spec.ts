@@ -26,12 +26,13 @@ describe('AppShell', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('nav')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('nav[aria-label="Điều hướng chính"]')).not.toBeNull();
+    expect(fixture.nativeElement.querySelector('app-topbar header')).not.toBeNull();
 
     await router.navigateByUrl('/events/new');
     fixture.detectChanges();
     await fixture.whenStable();
     fixture.detectChanges();
-    expect(fixture.nativeElement.querySelector('nav')).toBeNull();
+    expect(fixture.nativeElement.querySelector('nav[aria-label="Điều hướng chính"]')).toBeNull();
   });
 });
