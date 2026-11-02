@@ -92,10 +92,7 @@ interface NavItem {
 export class AppShell {
   private readonly router = inject(Router);
   protected readonly theme = inject(ThemeService);
-  /**
-   * Trang tạo/sửa sự kiện trên mobile là sheet toàn màn hình (design Step1–Step4):
-   * ẩn tab bar dưới, sidebar desktop giữ nguyên (design WebCreateDialog).
-   */
+  /** Dialog tạo sự kiện phủ backdrop toàn trang nên ẩn tab bar dưới để tránh lọt qua lớp phủ. */
   protected readonly hideMobileNav = toSignal(
     this.router.events.pipe(
       filter((e): e is NavigationEnd => e instanceof NavigationEnd),

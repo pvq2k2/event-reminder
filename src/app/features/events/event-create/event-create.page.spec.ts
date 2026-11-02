@@ -5,7 +5,7 @@ import { APP_DB, AppDb } from '@core/data/db';
 import { EventService } from '@core/data/event.service';
 import { SettingsRepository } from '@core/data/settings.repository';
 import { vnLocalToEpochMs } from '@core/domain/date';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { EventCreatePage } from './event-create.page';
 import { EventCreateStore } from './event-create.store';
@@ -20,7 +20,7 @@ const events = { create: vi.fn() };
 const settings = { get: vi.fn(), update: vi.fn() };
 
 let db: AppDb;
-let fixture: ComponentFixture<EventCreatePage>;
+let fixture: ComponentFixture<EventCreatePage> | null = null;
 let root: HTMLElement;
 let store: EventCreateStore;
 
@@ -39,10 +39,22 @@ beforeEach(async () => {
   }).compileComponents();
 });
 
+afterEach(() => {
+  fixture?.destroy();
+  fixture = null;
+});
+
+function detect(): void {
+  if (!fixture) throw new Error('Chưa render EventCreatePage');
+  fixture.detectChanges();
+}
+
 function render(): void {
   fixture = TestBed.createComponent(EventCreatePage);
-  fixture.detectChanges();
-  root = fixture.nativeElement as HTMLElement;
+  detect();
+  const overlay = document.querySelector<HTMLElement>('.cdk-overlay-container');
+  if (!overlay) throw new Error('Không tìm thấy dialog');
+  root = overlay;
   store = fixture.debugElement.injector.get(EventCreateStore);
 }
 
@@ -58,19 +70,19 @@ function continueButton(): HTMLButtonElement {
 
 function next(): void {
   continueButton().click();
-  fixture.detectChanges();
+  detect();
 }
 
 function clickButton(label: string): void {
   const button = Array.from(root.querySelectorAll('button')).find((b) => b.textContent.includes(label));
   if (!button) throw new Error(`Không tìm thấy nút ${label}`);
   button.click();
-  fixture.detectChanges();
+  detect();
 }
 
 function goToStep2(): void {
   store.form.controls.title.setValue('Họp');
-  fixture.detectChanges();
+  detect();
   next();
 }
 
@@ -78,7 +90,7 @@ describe('EventCreatePage validation', () => {
   it('chặn bước 1 khi tiêu đề quá dài', () => {
     render();
     store.form.controls.title.setValue('x'.repeat(201));
-    fixture.detectChanges();
+    detect();
 
     next();
 
@@ -106,12 +118,12 @@ describe('EventCreatePage validation', () => {
 
     const allDaySwitch = root.querySelector('button[role="switch"]') as HTMLButtonElement;
     allDaySwitch.click();
-    fixture.detectChanges();
+    detect();
 
     const endTime = root.querySelectorAll('input[type="time"]')[1] as HTMLInputElement;
     endTime.value = '18:00';
     endTime.dispatchEvent(new Event('input', { bubbles: true }));
-    fixture.detectChanges();
+    detect();
 
     expect(text()).toContain('Giờ kết thúc phải sau giờ bắt đầu');
 
@@ -145,7 +157,7 @@ describe('EventCreatePage validation', () => {
     store.form.controls.isAllDay.setValue(false);
     store.form.controls.startTime.setValue('19:00');
     store.form.controls.endTime.setValue('20:00');
-    fixture.detectChanges();
+    detect();
 
     next();
     expect(text()).toContain('Có lặp lại không?');

@@ -1,12 +1,13 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { EventValidationError, type NewEvent } from '@core/data/event.repository';
 import { EventService } from '@core/data/event.service';
 import { SettingsRepository } from '@core/data/settings.repository';
 import { ZardAlertComponent } from '@shared/components/alert';
 import { ZardButtonComponent } from '@shared/components/button';
+import { ZardDialogImports } from '@shared/components/dialog';
 import { ZardSonnerService } from '@shared/components/sonner/sonner.service';
 import { AppIconComponent } from '@shared/ui';
 import { mergeClasses } from '@shared/utils/merge-classes';
@@ -17,8 +18,15 @@ import { StepRemind } from './step-remind';
 import { StepRepeat } from './step-repeat';
 import { StepWhen } from './step-when';
 
+const DIALOG_CLASS = [
+  'h-dvh max-h-dvh w-full max-w-none gap-0 overflow-hidden rounded-none p-0 ring-0',
+  'sm:max-w-none',
+  'md:h-auto md:max-h-[calc(100dvh-2rem)] md:w-[min(40rem,calc(100vw-2rem))] md:max-w-[40rem] md:rounded-xl md:ring-1',
+].join(' ');
+const STEP_LABELS = ['Cơ bản', 'Thời gian', 'Lặp lại', 'Nhắc nhở'] as const;
+
 /**
- * Form tạo sự kiện 4 bước theo design Step1–Step4.
+ * Form tạo sự kiện 4 bước trong dialog (design Step1–Step4, WebCreateDialog).
  * Page giữ khung header–scroll–footer, điều hướng bước (kèm hoạt ảnh) và lưu;
  * form/state/derived nằm trong `EventCreateStore`, mỗi bước là một component riêng.
  */
@@ -27,91 +35,114 @@ import { StepWhen } from './step-when';
   imports: [
     AppIconComponent,
     ReactiveFormsModule,
-    RouterLink,
     StepBasics,
     StepRemind,
     StepRepeat,
     StepWhen,
     ZardAlertComponent,
     ZardButtonComponent,
+    ...ZardDialogImports,
   ],
   providers: [EventCreateStore],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  // Host phải block + cao full để khung header-scroll-footer bên trong tính đúng.
-  host: { class: 'block h-full min-h-0' },
+  host: { class: 'block' },
   template: `
-    <form [formGroup]="store.form" (ngSubmit)="save()" class="mx-auto flex h-full min-h-0 w-full max-w-xl flex-col">
-      <div class="shrink-0 px-4 pt-4 md:px-6 md:pt-6">
-        <div class="flex items-center justify-between">
-          <a z-button zSize="icon" class="size-11 rounded-xl" routerLink="/today" aria-label="Đóng">
-            <app-icon name="x" [size]="20" />
-          </a>
-          <span class="flex-1 text-center text-sm text-muted-foreground">Bước {{ step() }}/4</span>
-          <span class="w-11"></span>
+    <z-dialog
+      [zVisible]="open()"
+      (zVisibleChange)="open.set($event)"
+      (zAfterClose)="leave()"
+      [zClosable]="false"
+      [zMaskClosable]="false"
+      [class]="dialogClass"
+    >
+      <form
+        [formGroup]="store.form"
+        (ngSubmit)="save()"
+        class="flex h-full max-h-none min-h-0 w-full flex-col md:h-auto md:max-h-[calc(100dvh-2rem)]"
+      >
+        <div class="shrink-0 px-4 pt-4 md:px-6 md:pt-6">
+          <div class="flex items-start justify-between gap-4">
+            <div class="min-w-0">
+              <z-dialog-title zTitle="Tạo sự kiện" class="block text-lg font-semibold" />
+              <z-dialog-description [zDescription]="stepDescription()" class="block" />
+            </div>
+            <button
+              z-button
+              zType="ghost"
+              zSize="icon"
+              type="button"
+              class="size-9 shrink-0 cursor-pointer"
+              (click)="requestClose()"
+              [disabled]="saving()"
+              aria-label="Đóng"
+            >
+              <app-icon name="x" [size]="18" />
+            </button>
+          </div>
+          <div class="mt-3 flex gap-1.5" aria-hidden="true">
+            @for (i of [1, 2, 3, 4]; track i) {
+              <i
+                class="h-1.5 flex-1 rounded-full transition-colors duration-300 motion-reduce:transition-none"
+                [class.bg-primary]="i <= step()"
+                [class.bg-muted]="i > step()"
+              ></i>
+            }
+          </div>
         </div>
-        <div class="mt-2 flex gap-1.5" aria-hidden="true">
-          @for (i of [1, 2, 3, 4]; track i) {
-            <i
-              class="h-1.5 flex-1 rounded-full transition-colors duration-300 motion-reduce:transition-none"
-              [class.bg-primary]="i <= step()"
-              [class.bg-muted]="i > step()"
-            ></i>
-          }
-        </div>
-      </div>
 
-      <div class="scrollbar-thin min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 md:px-6 md:py-6">
-        @if (saveError()) {
-          <z-alert
-            zType="destructive"
-            [zDescription]="saveError() ?? ''"
-            class="mb-4 animate-in duration-200 fade-in motion-reduce:animate-none"
-          />
-        }
-        @switch (step()) {
-          @case (1) {
-            <div [class]="stepAnimCls()"><app-step-basics /></div>
+        <div class="scrollbar-thin min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 md:px-6 md:py-6">
+          @if (saveError()) {
+            <z-alert
+              zType="destructive"
+              [zDescription]="saveError() ?? ''"
+              class="mb-4 animate-in duration-200 fade-in motion-reduce:animate-none"
+            />
           }
-          @case (2) {
-            <div [class]="stepAnimCls()"><app-step-when /></div>
+          @switch (step()) {
+            @case (1) {
+              <div [class]="stepAnimCls()"><app-step-basics /></div>
+            }
+            @case (2) {
+              <div [class]="stepAnimCls()"><app-step-when /></div>
+            }
+            @case (3) {
+              <div [class]="stepAnimCls()"><app-step-repeat /></div>
+            }
+            @case (4) {
+              <div [class]="stepAnimCls()"><app-step-remind /></div>
+            }
           }
-          @case (3) {
-            <div [class]="stepAnimCls()"><app-step-repeat /></div>
-          }
-          @case (4) {
-            <div [class]="stepAnimCls()"><app-step-remind /></div>
-          }
-        }
-      </div>
-
-      <div class="shrink-0 border-t border-border bg-card p-4">
-        <!-- Hai nút giữ nguyên element khi đổi bước (chỉ đổi nhãn/handler) để không giật layout. -->
-        <div class="flex gap-2">
-          <button
-            z-button
-            [zType]="step() === 1 ? 'outline' : 'secondary'"
-            zSize="lg"
-            type="button"
-            (click)="secondaryAction()"
-            [disabled]="step() === 1 && saving()"
-            class="h-12 flex-1 cursor-pointer md:h-10"
-          >
-            {{ step() === 1 ? 'Lưu nhanh' : 'Quay lại' }}
-          </button>
-          <button
-            z-button
-            zSize="lg"
-            [type]="step() === 4 ? 'submit' : 'button'"
-            (click)="primaryAction()"
-            [disabled]="saving()"
-            [zLoading]="saving() && step() === 4"
-            class="h-12 flex-1 cursor-pointer md:h-10"
-          >
-            {{ step() === 4 ? (saving() ? 'Đang lưu…' : 'Tạo sự kiện') : 'Tiếp tục' }}
-          </button>
         </div>
-      </div>
-    </form>
+
+        <div class="shrink-0 border-t border-border p-4">
+          <!-- Hai nút giữ nguyên element khi đổi bước (chỉ đổi nhãn/handler) để không giật layout. -->
+          <div class="flex gap-2">
+            <button
+              z-button
+              [zType]="step() === 1 ? 'outline' : 'secondary'"
+              zSize="lg"
+              type="button"
+              (click)="secondaryAction()"
+              [disabled]="step() === 1 && saving()"
+              class="h-12 flex-1 cursor-pointer md:h-10"
+            >
+              {{ step() === 1 ? 'Lưu nhanh' : 'Quay lại' }}
+            </button>
+            <button
+              z-button
+              zSize="lg"
+              [type]="step() === 4 ? 'submit' : 'button'"
+              (click)="primaryAction()"
+              [disabled]="saving()"
+              [zLoading]="saving() && step() === 4"
+              class="h-12 flex-1 cursor-pointer md:h-10"
+            >
+              {{ step() === 4 ? (saving() ? 'Đang lưu…' : 'Tạo sự kiện') : 'Tiếp tục' }}
+            </button>
+          </div>
+        </div>
+      </form>
+    </z-dialog>
   `,
 })
 export class EventCreatePage {
@@ -122,8 +153,11 @@ export class EventCreatePage {
 
   protected readonly store = inject(EventCreateStore);
   protected readonly step = signal(1);
+  protected readonly stepDescription = computed(() => `Bước ${this.step()} trong 4 · ${STEP_LABELS[this.step() - 1]}`);
   protected readonly saving = signal(false);
   protected readonly saveError = signal<string | null>(null);
+  protected readonly open = signal(true);
+  protected readonly dialogClass = DIALOG_CLASS;
   /** Hướng chuyển bước: 1 = tiến (trượt từ phải), -1 = lùi (trượt từ trái). */
   private readonly dir = signal<1 | -1>(1);
 
@@ -137,6 +171,14 @@ export class EventCreatePage {
       'animate-in fade-in duration-250 motion-reduce:animate-none',
       this.dir() === -1 ? 'slide-in-from-left-4' : 'slide-in-from-right-4',
     );
+  }
+
+  protected requestClose(): void {
+    this.open.set(false);
+  }
+
+  protected leave(): void {
+    void this.router.navigate(['/today']);
   }
 
   /** Nút phụ footer giữ nguyên element khi đổi bước để không giật: bước 1 = Lưu nhanh, còn lại = Quay lại. */
