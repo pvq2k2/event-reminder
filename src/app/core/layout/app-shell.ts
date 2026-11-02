@@ -1,8 +1,10 @@
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { ThemeService } from '@core/theme/theme.service';
 import { ZardSonnerComponent } from '@shared/components/sonner';
+import { ZardTooltipImports } from '@shared/components/tooltip';
 import { AppIconComponent, AppLogoComponent, type IconName } from '@shared/ui';
 import { filter, map } from 'rxjs';
 
@@ -29,6 +31,7 @@ interface NavItem {
     RouterLinkActive,
     RouterOutlet,
     ZardSonnerComponent,
+    ...ZardTooltipImports,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -36,7 +39,7 @@ interface NavItem {
       <aside
         class="hidden scrollbar-thin h-dvh shrink-0 flex-col gap-1 overflow-y-auto border-r border-sidebar-border bg-sidebar p-3 text-sidebar-foreground md:flex md:w-16 lg:w-64"
       >
-        <div class="mb-4 flex items-center gap-2 px-2 py-1">
+        <div class="mb-4 flex items-center justify-center gap-2 lg:justify-start lg:px-2 lg:py-1">
           <app-logo [size]="32" />
           <b class="hidden text-sm lg:block">Event Reminder</b>
         </div>
@@ -44,8 +47,10 @@ interface NavItem {
           <a
             [routerLink]="item.path"
             routerLinkActive="bg-sidebar-accent text-sidebar-accent-foreground [&_app-icon]:text-sidebar-primary"
-            class="flex h-10 items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors hover:bg-sidebar-accent/70"
+            class="flex h-10 items-center justify-center gap-3 rounded-md px-3 text-sm font-medium transition-colors hover:bg-sidebar-accent/70 lg:justify-start"
             [attr.aria-label]="item.label"
+            [zTooltip]="railTooltip() ? item.label : null"
+            zPosition="right"
           >
             <app-icon [name]="item.icon" />
             <span class="hidden lg:inline">{{ item.label }}</span>
@@ -91,6 +96,7 @@ interface NavItem {
 })
 export class AppShell {
   private readonly router = inject(Router);
+  private readonly breakpoint = inject(BreakpointObserver);
   protected readonly theme = inject(ThemeService);
   /** Dialog tạo sự kiện phủ backdrop toàn trang nên ẩn tab bar dưới để tránh lọt qua lớp phủ. */
   protected readonly hideMobileNav = toSignal(
@@ -99,6 +105,11 @@ export class AppShell {
       map((e) => e.urlAfterRedirects.startsWith('/events')),
     ),
     { initialValue: this.router.url.startsWith('/events') },
+  );
+  /** Rail md–lg chỉ có icon; tooltip chỉ bật khi label ở sidebar đang bị ẩn. */
+  protected readonly railTooltip = toSignal(
+    this.breakpoint.observe('(min-width: 1024px)').pipe(map((state) => !state.matches)),
+    { initialValue: !this.breakpoint.isMatched('(min-width: 1024px)') },
   );
   protected readonly nav: NavItem[] = [
     { path: '/today', label: 'Hôm nay', icon: 'today' },

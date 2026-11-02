@@ -19,8 +19,7 @@ import { StepRepeat } from './step-repeat';
 import { StepWhen } from './step-when';
 
 const DIALOG_CLASS = [
-  'h-dvh max-h-dvh w-full max-w-none gap-0 overflow-hidden rounded-none p-0 ring-0',
-  'sm:max-w-none',
+  'h-dvh max-h-dvh w-dvw max-w-none gap-0 overflow-hidden rounded-none p-0 ring-0 sm:max-w-none',
   'md:h-auto md:max-h-[calc(100dvh-2rem)] md:w-[min(40rem,calc(100vw-2rem))] md:max-w-[40rem] md:rounded-xl md:ring-1',
 ].join(' ');
 const STEP_LABELS = ['Cơ bản', 'Thời gian', 'Lặp lại', 'Nhắc nhở'] as const;
