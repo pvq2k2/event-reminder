@@ -314,12 +314,12 @@ Hoàn thành ✅ · Một phần 🟡 · Chưa ⬜. Thời gian cho một develo
 |---|---|---|---|
 | **0 Khởi tạo** | Angular, strict, ESLint, Prettier, CI, PWA, Tailwind v4, path alias | ✅ | Chạy `zard-cli init` (0,5 ngày) |
 | **1 Domain + DB** | Models, Dexie v1, repository, validation | ✅ | Thêm `import/export` (xem P7) |
-| **2 Theme + CRUD sự kiện** | Theme/font scale ✅, shell ✅, Hôm nay ✅, Lịch tháng ✅ | 🟡 | Form 4 bước + tạo nhanh, chi tiết/sửa/xóa, Cài đặt đầy đủ (3 đến 4 ngày) |
+| **2 Theme + CRUD sự kiện** | Theme/font scale ✅, shell ✅, Hôm nay ✅, Lịch tháng ✅, Lịch tuần ✅, Lịch ngày ✅ | 🟡 | Form 4 bước + tạo nhanh, chi tiết/sửa/xóa, Cài đặt đầy đủ (3 đến 4 ngày) |
 | **3 Lịch âm** | Converter + test | ✅ | Đối chiếu bảng chuẩn thêm (0,5 ngày) |
 | **4 Recurrence** | Engine + exception | ✅ | UI "chỉ lần này / lần này và sau / toàn bộ" (1 đến 2 ngày) |
 | **5 Nhắc nhở** | Port + adapter in-app, reconciler, quyền | 🟡 | Click thông báo → mở sự kiện (SW), **xuất `.ics`**, toast fallback UI, Periodic Sync tùy chọn (2 đến 4 ngày) |
 | **6 Danh bạ** | Quy tắc dữ liệu ✅ (repo + test) | 🟡 | UI CRUD, tìm kiếm, chi tiết liên hệ, xác nhận xóa, nhập vCard/CSV (3 đến 4 ngày) |
-| **7 Kiểm thử + phát hành** | 119 unit/integration ✅ | 🟡 | E2E (Playwright), axe, Lighthouse PWA, test iOS/Android/desktop thật, xuất/nhập sao lưu, hosting HTTPS (3 đến 5 ngày) |
+| **7 Kiểm thử + phát hành** | 210 unit/integration ✅ | 🟡 | E2E (Playwright), axe, Lighthouse PWA, test iOS/Android/desktop thật, xuất/nhập sao lưu, hosting HTTPS (3 đến 5 ngày) |
 
 Tổng còn lại: khoảng **2,5 đến 4 tuần** cho một developer.
 
@@ -327,7 +327,7 @@ Tổng còn lại: khoảng **2,5 đến 4 tuần** cho một developer.
 
 ## 13. Kiểm thử
 
-**Đã có (119 test):** lunar (17), recurrence (12), reminders (4), validation (7), repository + quy tắc xóa + settings (6), app (1), tương phản WCAG 6 biến thể (72).
+**Đã có (210 test):** lunar, recurrence, reminders, validation, repository + quy tắc xóa + settings, calendar utils (tháng/tuần/ngày + lời nhắc), app, tương phản WCAG 6 biến thể.
 
 **Cần thêm:**
 - **E2E (Playwright):** tạo sự kiện lặp âm lịch, mở lại ứng dụng dữ liệu còn, đổi theme, offline (tắt mạng sau lần tải đầu).

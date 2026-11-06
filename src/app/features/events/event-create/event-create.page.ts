@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EventValidationError, type NewEvent } from '@core/data/event.repository';
 import { EventService } from '@core/data/event.service';
 import { SettingsRepository } from '@core/data/settings.repository';
@@ -148,6 +148,7 @@ export class EventCreatePage {
   private readonly events = inject(EventService);
   private readonly settings = inject(SettingsRepository);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   private readonly sonner = inject(ZardSonnerService);
 
   protected readonly store = inject(EventCreateStore);
@@ -161,6 +162,8 @@ export class EventCreatePage {
   private readonly dir = signal<1 | -1>(1);
 
   constructor() {
+    const date = this.route.snapshot.queryParamMap.get('date');
+    if (date) this.store.setInitialDate(date);
     this.store.form.valueChanges.pipe(takeUntilDestroyed()).subscribe(() => this.saveError.set(null));
   }
 
@@ -172,12 +175,18 @@ export class EventCreatePage {
     );
   }
 
+  private resolveReturnUrl(): string {
+    const previous = this.router.lastSuccessfulNavigation()?.previousNavigation?.finalUrl;
+    const url = previous ? this.router.serializeUrl(previous) : '';
+    return url && !url.startsWith('/events/new') ? url : '/today';
+  }
+
   protected requestClose(): void {
     this.open.set(false);
   }
 
   protected leave(): void {
-    void this.router.navigate(['/today']);
+    void this.router.navigateByUrl(this.resolveReturnUrl(), { replaceUrl: true });
   }
 
   /** Nút phụ footer giữ nguyên element khi đổi bước để không giật: bước 1 = Lưu nhanh, còn lại = Quay lại. */
@@ -230,7 +239,7 @@ export class EventCreatePage {
         /* giữ allDayReminderTime cũ khi settings lỗi */
       }
       this.sonner.success('Đã tạo sự kiện');
-      await this.router.navigate(['/']);
+      await this.router.navigateByUrl(this.resolveReturnUrl(), { replaceUrl: true });
     } catch (e) {
       if (e instanceof EventValidationError) {
         const keys = Object.keys(e.errors);

@@ -334,6 +334,27 @@ export class EventCreateStore {
     if (![y, m, d].every(Number.isInteger)) return;
     this.form.controls.startDate.setValue(formatIso(y, m, d));
   }
+  /** Điền ngày bắt đầu từ query param của trang Lịch, kèm các phần âm lịch tương ứng. */
+  setInitialDate(date: string): void {
+    const parts = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+    if (!parts) return;
+    const y = Number(parts[1]);
+    const m = Number(parts[2]);
+    const d = Number(parts[3]);
+    if (m < 1 || m > 12 || d < 1 || d > daysInMonth(y, m) || formatIso(y, m, d) !== date) return;
+    try {
+      const lunar = gregorianToLunar(date);
+      this.form.patchValue({
+        startDate: date,
+        lunarDay: lunar.day,
+        lunarMonth: lunar.month,
+        lunarYear: lunar.year,
+        isLeapMonth: lunar.isLeapMonth,
+      });
+    } catch {
+      /* ngày ngoài miền âm lịch: vẫn giữ ngày dương hợp lệ */
+    }
+  }
   toggleContact(id: string): void {
     this.selectedContacts.update((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
   }

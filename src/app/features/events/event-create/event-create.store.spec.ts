@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Clock } from '@core/data/clock';
 import { APP_DB, AppDb } from '@core/data/db';
 import { vnLocalToEpochMs } from '@core/domain/date';
+import { gregorianToLunar } from '@core/domain/lunar';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { EventCreateStore } from './event-create.store';
@@ -63,6 +64,24 @@ describe('EventCreateStore validation', () => {
 
     expect(store.endTimeError()).toBeNull();
     expect(store.validateStep(2)).toBe(true);
+  });
+
+  it('điền ngày bắt đầu và ngày âm từ trang Lịch', () => {
+    const lunar = gregorianToLunar('2026-11-09');
+
+    store.setInitialDate('2026-11-09');
+
+    expect(store.form.controls.startDate.value).toBe('2026-11-09');
+    expect(store.form.controls.lunarDay.value).toBe(lunar.day);
+    expect(store.form.controls.lunarMonth.value).toBe(lunar.month);
+    expect(store.form.controls.lunarYear.value).toBe(lunar.year);
+    expect(store.form.controls.isLeapMonth.value).toBe(lunar.isLeapMonth);
+  });
+
+  it('bỏ qua ngày không tồn tại khi prefill', () => {
+    store.setInitialDate('2026-02-31');
+
+    expect(store.form.controls.startDate.value).toBe('2026-10-20');
   });
 
   it('chặn lặp tuần không chọn thứ ở bước 3', () => {

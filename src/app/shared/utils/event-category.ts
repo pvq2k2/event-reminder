@@ -5,6 +5,7 @@ export interface EventCategoryStyle {
   badge: string;
   dot: string;
   soft: string;
+  card: string;
 }
 
 /**
@@ -17,24 +18,28 @@ export const EVENT_CATEGORY_STYLES: Record<EventCategory, EventCategoryStyle> = 
     badge: 'bg-event-work/15 text-event-work-ink',
     dot: 'bg-event-work',
     soft: 'bg-event-work/10',
+    card: 'md:bg-event-work/10',
   },
   birthday: {
     label: 'Sinh nhật',
     badge: 'bg-event-birthday/20 text-event-birthday-ink',
     dot: 'bg-event-birthday',
     soft: 'bg-event-birthday/10',
+    card: 'md:bg-event-birthday/10',
   },
   memorial: {
     label: 'Giỗ · Âm lịch',
     badge: 'bg-event-memorial/20 text-event-memorial-ink',
     dot: 'bg-event-memorial',
     soft: 'bg-event-memorial/10',
+    card: 'md:bg-event-memorial/10',
   },
   other: {
     label: 'Khác',
     badge: 'bg-muted text-muted-foreground',
     dot: 'bg-muted-foreground',
     soft: 'bg-muted/60',
+    card: 'md:bg-muted/60',
   },
 };
 

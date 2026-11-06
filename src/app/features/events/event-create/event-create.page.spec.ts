@@ -1,5 +1,5 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
 import { Clock } from '@core/data/clock';
 import { APP_DB, AppDb } from '@core/data/db';
 import { EventService } from '@core/data/event.service';
@@ -149,6 +149,16 @@ describe('EventCreatePage validation', () => {
 
     expect(text()).toContain('Có lặp lại không?');
     expect(text()).toContain('Chọn ít nhất một thứ trong tuần');
+  });
+
+  it('điền ngày bắt đầu từ query param của trang Lịch', () => {
+    TestBed.overrideProvider(ActivatedRoute, {
+      useValue: { snapshot: { queryParamMap: convertToParamMap({ date: '2026-11-09' }) } },
+    });
+
+    render();
+
+    expect(store.form.controls.startDate.value).toBe('2026-11-09');
   });
 
   it('đi qua các bước khi dữ liệu hợp lệ', () => {

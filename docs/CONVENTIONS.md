@@ -167,7 +167,7 @@ ESLint chặn: domain import `@angular/*`, `dexie`, `rxjs`, hoặc tầng trên;
 - Sửa lỗi = thêm test tái hiện lỗi trước.
 
 ## 13. Git, review và Definition of Done
-- **Conventional Commits:** `feat(calendar): thêm chế độ agenda`, `fix(lunar): …`, `docs: …`, `chore: …`. Một PR một mục đích, nhỏ (< 400 dòng đổi là lý tưởng).
+- **Conventional Commits:** `feat(calendar): thêm chế độ tuần`, `fix(lunar): …`, `docs: …`, `chore: …`. Một PR một mục đích, nhỏ (< 400 dòng đổi là lý tưởng).
 - Nhánh `main` luôn xanh; merge bằng squash qua PR; CI (`format:check`, `lint`, `test:ci`, `build`) phải đạt.
 
 **Checklist PR (reviewer kiểm tra):**

@@ -31,7 +31,8 @@ Căn cứ: các màn trên canvas thiết kế (mobile 25 màn, web 7 board) và
 | Hôm nay: **skeleton đang tải**                                                |            ✅            |           ⬜            | Thiết kế; **đã có trong code**                                                                                        |
 | Hôm nay: **lỗi lên lịch nhắc** (banner + thử lại)                             |            ✅            |           ⬜            | Thiết kế + toast fallback                                                                                             |
 | Lịch tháng + ngày âm + panel ngày                                             |            ✅            |           ✅            | —                                                                                                                     |
-| Lịch **Tuần / Ngày / Agenda**                                                 |    🟡 (chỉ nhãn tab)     |    🟡 (chỉ nhãn tab)    | **Cả hai chưa có màn**, thiết kế rồi cài                                                                              |
+| Lịch **Tuần**                                                                 |            ✅            |           ✅            | —                                                                                                                     |
+| Lịch **Ngày**                                                                 |            ⬜            |           ✅            | —                                                                                                                     |
 | Tạo sự kiện **4 bước**                                                        |            ✅            |     🟡 (chỉ bước 2)     | Thiết kế bước 1, 3, 4                                                                                                 |
 | **Tạo nhanh**                                                                 |            ⬜            |           ⬜            | Thiết kế mới (mục A.3)                                                                                                |
 | Chi tiết sự kiện (đếm ngược, lần tiếp theo, người liên quan)                  |            ✅            |           ⬜            | Thiết kế                                                                                                              |
@@ -86,6 +87,6 @@ Căn cứ: các màn trên canvas thiết kế (mobile 25 màn, web 7 board) và
 
 **P0 (chặn MVP):** tạo sự kiện bước 1/3/4 + **Tạo nhanh**; chi tiết/sửa/xóa sự kiện + chọn phạm vi chuỗi lặp; chi tiết/thêm liên hệ, thêm/xóa gia đình; **quyền thông báo (xin/từ chối)**; **sao lưu + `.ics`**; trạng thái trống/tải/lỗi; sửa lại câu chữ nhắc nhở (A.1).
 
-**P1:** Lịch Tuần/Agenda; tìm kiếm `⌘K`; cài đặt nhắc nhở đầy đủ + cỡ chữ; nhập vCard/CSV; PWA (cài, offline, cập nhật); toast nhắc trong ứng dụng; hoàn thành/hủy sự kiện.
+**P1:** Tìm kiếm `⌘K`; cài đặt nhắc nhở đầy đủ + cỡ chữ; nhập vCard/CSV; PWA (cài, offline, cập nhật); toast nhắc trong ứng dụng; hoàn thành/hủy sự kiện.
 
-**P2:** Phím tắt; lịch Ngày; sinh nhật liên hệ tự động tạo sự kiện; hoàn tác; snooze.
+**P2:** Phím tắt; sinh nhật liên hệ tự động tạo sự kiện; hoàn tác; snooze.
