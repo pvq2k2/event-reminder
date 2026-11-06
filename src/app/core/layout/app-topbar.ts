@@ -35,7 +35,7 @@ const SECTIONS = [
 
       <button
         type="button"
-        class="flex h-9 w-70 items-center gap-2 rounded-md border border-input bg-card px-3 text-sm text-muted-foreground transition-colors hover:bg-muted focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+        class="flex h-9 w-70 cursor-pointer items-center gap-2 rounded-md border border-input bg-card px-3 text-sm text-muted-foreground transition-colors hover:bg-muted focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
         aria-label="Tìm kiếm sự kiện, người thân"
         (click)="openSearch()"
       >
@@ -47,6 +47,7 @@ const SECTIONS = [
       <a
         z-button
         zType="outline"
+        class="bg-card!"
         zSize="icon-lg"
         routerLink="/settings"
         fragment="notifications"
@@ -59,6 +60,7 @@ const SECTIONS = [
       <button
         z-button
         zType="outline"
+        class="cursor-pointer bg-card!"
         zSize="icon-lg"
         type="button"
         [attr.aria-label]="theme.isDark() ? 'Chuyển sang chế độ sáng' : 'Chuyển sang chế độ tối'"
