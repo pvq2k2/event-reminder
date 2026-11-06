@@ -45,7 +45,7 @@ import { type TodayWeekDay, TodayWeekStrip } from './today-week-strip';
   // Host phải block + cao full để khung header-scroll bên trong tính đúng.
   host: { class: 'block h-full min-h-0' },
   template: `
-    <div class="mx-auto flex h-full min-h-0 w-full max-w-6xl flex-col">
+    <div class="flex h-full min-h-0 w-full flex-col">
       <app-today-header
         class="animate-in duration-300 fade-in motion-reduce:animate-none"
         [today]="today()"
